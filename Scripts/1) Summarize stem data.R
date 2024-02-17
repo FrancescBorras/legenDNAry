@@ -31,5 +31,5 @@ richness <- unlist(lapply(neighborhoods, function(x) length(unique(x$Mnemonic)))
 
 
 
-#laura trying out oyur github, ciao! 
+#laura trying out your github, ciao! 
 
