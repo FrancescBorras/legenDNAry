@@ -1,0 +1,61 @@
+"","Genus","Species","OTU","sequence","abundance","superkingdom","phylum","class","order","family","genus","species"
+"1","POTU1","g","OTU98","ATATCATTTCATCTATCTAAGTTTTAGATGACGAAGCGA","POTU1","Eukaryota","Streptophyta","Polypodiopsida","Cyatheales","Cyatheaceae","Cyathea","Cyathea arborea"
+"2","POTU10","g","OTU77","ATCCGGTTTTCCGAAAACAAACAAAGGTTCAGAAATACAGAAACAAAGG","POTU10","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Euphorbiaceae","Sapium","Sapium laurocerasus"
+"3","POTU11","g","OTU62","ATCCGGTTTTCTGAAAACAAACAAGGGTTCAGAAGGCGATAATAAAAAAG","POTU11","Eukaryota","Streptophyta","Magnoliopsida","Rosales","Moraceae","Pseudolmedia","Pseudolmedia spuria"
+"4","POTU13","g","OTU5","ATCCGGTTTTCTGAAGACAAACAAGGATTCAGAAGGCGATAATAAAAAAG","POTU13","Eukaryota","Streptophyta","Magnoliopsida","Rosales","Moraceae","Ficus",NA
+"5","POTU14","g","OTU106","ATCCGTGTTTTGAGAAAACAAGTGGTTCTCGAACTAGAATCCAAAAGAAAAG","POTU14","Eukaryota","Streptophyta","Magnoliopsida","Poales","Poaceae","Bambusa","Bambusa vulgaris"
+"6","POTU15","g","OTU85","ATCCTATGTTCAGAAAACAAGGTTCAGAAAGCACGAATAAAAAAAAG","POTU15","Eukaryota","Streptophyta","Magnoliopsida","Magnoliales","Annonaceae","Guatteria","Guatteria caribaea"
+"7","POTU19","g","OTU331","ATCCTATTCTATTATTTTACGAAAATAAACAGAAACAAAAGTTCAGCAAGCGAGAATAATAAAAAAAGGAAAG","POTU19","Eukaryota","Streptophyta","Magnoliopsida","Malvales","Malvaceae","Talipariti","Talipariti tiliaceum"
+"8","POTU2","g","OTU103","ATCCAGTTTTCCGAAACCAAAGGTTCAGAAAGTGAAAAAAG","POTU2","Eukaryota","Streptophyta","Magnoliopsida","Gentianales","Rubiaceae","Chione",NA
+"9","POTU22","g","OTU33","ATCCTATTTTACGAGAACAAAAACAAACAAGGGGTCAGAACGGGAGAAAAAAAG","POTU22","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Anacardiaceae","Mangifera","Mangifera indica"
+"10","POTU23","g","OTU10","ATCCTATTTTATGAAAACCAACAAAACAACAAAGATTCAGAATAAAAAAAG","POTU23","Eukaryota","Streptophyta","Magnoliopsida","Myrtales","Combretaceae","Terminalia","Terminalia tetraphylla"
+"11","POTU26","g","OTU18","ATCCTATTTTTCAGAAAACACGAGTTAAGAAAGCGAAAAAGG","POTU26","Eukaryota","Streptophyta","Magnoliopsida","Piperales","Piperaceae","Piper","Piper glabrescens"
+"12","POTU28","g","OTU30","ATCCTATTTTTCGAAAACAAACAAAAAACAAACAAAGGTTCATAAAAAAAGAATCAGAATACAAAAG","POTU28","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Salicaceae","Homalium","Homalium racemosum"
+"13","POTU29","g","OTU180","ATCCTCTTTTTCGAAAACAAAGATTAAAGGAAAATAAAAAGAGG","POTU29","Eukaryota","Streptophyta","Magnoliopsida","Ericales","Primulaceae","Ardisia","Ardisia glauciflora"
+"14","POTU3","g","OTU115","ATCCATTTTTATCAAAACAAACAAGGATTCGGAAATCGATAATAAAAAAGATAGG","POTU3","Eukaryota","Streptophyta","Magnoliopsida","Rosales","Urticaceae","Urera","Urera baccifera"
+"15","POTU31","g","OTU31","ATCCTGGTTTACGAAAACCAACAGCAGTTCATAAAGCGAGAATACAAAATGAATAG","POTU31","Eukaryota","Streptophyta","Magnoliopsida","Myrtales","Melastomataceae",NA,NA
+"16","POTU32","g","OTU37","ATCCTGTGTTCAGAAAACAAGGTTCAGAAAGCGAGAATCAAAAACAGAAAAAG","POTU32","Eukaryota","Streptophyta","Magnoliopsida","Magnoliales","Annonaceae","Oxandra","Oxandra laurifolia"
+"17","POTU34","g","OTU6","ATCCTGTTTTACAAGAACAAACAAGGGTTCAGAAAGCGAAAAAGGG","POTU34","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Meliaceae",NA,NA
+"18","POTU35","g","OTU153","ATCCTGTTTTACGAAAACAAACAAAAGTTTATAAAGACAGAATAAAAAAAAAG","POTU35","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Rhizophoraceae","Cassipourea","Cassipourea guianensis"
+"19","POTU37","g","OTU21","ATCCTGTTTTACGAAAACCAACAAAACAATAAGGGTTCATAAAGCGAGAATAAAAAAG","POTU37","Eukaryota","Streptophyta","Magnoliopsida","Myrtales","Myrtaceae","Eugenia","Eugenia domingensis"
+"20","POTU38","g","OTU65","ATCCTGTTTTACGAAAACCAACAGCAGTTCATAAAGCGAGAATACAAAAAGAATAG","POTU38","Eukaryota","Streptophyta","Magnoliopsida","Myrtales","Melastomataceae","Miconia",NA
+"21","POTU4","g","OTU43","ATCCCCTTTTCCGAAACCAAAGGTTCAGAAAGTGAAAAAGG","POTU4","Eukaryota","Streptophyta","Magnoliopsida","Gentianales","Rubiaceae","Psychotria",NA
+"22","POTU40","g","OTU7","ATCCTGTTTTACGAGAACAAACAAGGGTTCAAAGGG","POTU40","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Burseraceae","Dacryodes","Dacryodes excelsa"
+"23","POTU41","g","OTU59","ATCCTGTTTTACGAGAACAAACAAGGGTTCAGAACACGAGAAAAGG","POTU41","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Burseraceae","Protium","Protium balsamiferum"
+"24","POTU42","g","OTU126","ATCCTGTTTTACGAGAACCAACAGCAGTTCATAAAGCGAGAATACAAAAAGAATAG","POTU42","Eukaryota","Streptophyta","Magnoliopsida","Myrtales","Melastomataceae","Henriettea","Henriettea squamulosa"
+"25","POTU45","g","OTU27","ATCCTGTTTTCAAAAAACAAACAAAGGTTTATAAAGACAGAAAAAAAAAGGG","POTU45","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Malpighiaceae","Byrsonima","Byrsonima spicata"
+"26","POTU47","g","OTU11","ATCCTGTTTTCAGAAAACAAGGGTTCAGAAAGCGAGAACCAAAAAAAG","POTU47","Eukaryota","Streptophyta","Magnoliopsida","Laurales","Lauraceae","Ocotea",NA
+"27","POTU49","g","OTU208","ATCCTGTTTTCCAAAAACAAAACAAGGTTCATACATAAAGAAACAAAACAAGGTTCATACATAAAGACGGAATAAAAAAAAACG","POTU49","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Chrysobalanaceae","Hirtella","Hirtella rugosa"
+"28","POTU5","g","OTU64","ATCCCGTTTTCCGAAAACAAGGGTTCATAAAGTGAAAAAGGG","POTU5","Eukaryota","Streptophyta","Magnoliopsida","Gentianales","Rubiaceae","Faramea","Faramea occidentalis"
+"29","POTU50","g","OTU20","ATCCTGTTTTCCAAAAACAAACAAAGGTTCGTATCATAAAGATCGAATAAAAAAG","POTU50","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Phyllanthaceae","Margaritaria","Margaritaria nobilis"
+"30","POTU52","g","OTU28","ATCCTGTTTTCCCCAAACAAAGGTTCAGAAAGAAAAAAG","POTU52","Eukaryota","Streptophyta","Magnoliopsida","Lamiales","Oleaceae","Chionanthus","Chionanthus domingensis"
+"31","POTU54","g","OTU15","ATCCTGTTTTCCGAAAAAAAAGTTCATAAAGACAAGACAGAATAAAAAAAAG","POTU54","Eukaryota","Streptophyta","Magnoliopsida",NA,NA,NA,NA
+"32","POTU55","g","OTU36","ATCCTGTTTTCCGAAAACAAACAAAAGTTTAGAAAGCAAGAATAAAAAAG","POTU55","Eukaryota","Streptophyta","Magnoliopsida","Oxalidales","Connaraceae","Rourea","Rourea surinamensis"
+"33","POTU56","g","OTU22","ATCCTGTTTTCCGAAAACAAACAAAGGTTCAGAAAGCGAGAATCAAAAAAG","POTU56","Eukaryota","Streptophyta","Magnoliopsida","Ericales","Sapotaceae","Manilkara","Manilkara bidentata"
+"34","POTU57","g","OTU2","ATCCTGTTTTCCGAAAACAAACAAAGGTTCAGAAGGCGAAAAAAGG","POTU57","Eukaryota","Streptophyta","Magnoliopsida","Apiales","Araliaceae",NA,NA
+"35","POTU58","g","OTU104","ATCCTGTTTTCCGAAAACAAAGAAAAGTTCAGAAACCGAGAATAAAAAAG","POTU58","Eukaryota","Streptophyta","Magnoliopsida","Fabales","Fabaceae","Ormosia","Ormosia krugii"
+"36","POTU6","g","OTU100","ATCCCGTTTTCCGAAACCAAAGGTTCAGAAAGTGAAAAAAAG","POTU6","Eukaryota","Streptophyta","Magnoliopsida","Gentianales","Rubiaceae",NA,NA
+"37","POTU60","g","OTU34","ATCCTGTTTTCCGAAAACAAAGAAAGGTTCAGAAAGCGAAAAAGG","POTU60","Eukaryota","Streptophyta","Magnoliopsida","Boraginales","Cordiaceae","Cordia",NA
+"38","POTU61","g","OTU40","ATCCTGTTTTCCGAAAACAAGCAAAAGTTCATAAAGACAAGACAGAATAAAAAAAAAAAAG","POTU61","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Euphorbiaceae","Alchorneopsis","Alchorneopsis floribunda"
+"39","POTU63","g","OTU17","ATCCTGTTTTCCGAAAACCAAGAAGAGTTCAGAAAGGGAGAATAAAATAAAAAAAAAAG","POTU63","Eukaryota","Streptophyta","Magnoliopsida","Fabales","Fabaceae","Inga","Inga vera"
+"40","POTU65","g","OTU48","ATCCTGTTTTCCGAAACCAAAGGTACAGAAAGTGAAAAGGG","POTU65","Eukaryota","Streptophyta","Magnoliopsida","Gentianales","Rubiaceae","Ixora","Ixora ferrea"
+"41","POTU66","g","OTU1","ATCCTGTTTTCGAAAATAAACAAAGATTCAGAAAGCGAAAATAAAAAAAG","POTU66","Eukaryota","Streptophyta","Magnoliopsida",NA,NA,NA,NA
+"42","POTU69","g","OTU109","ATCCTGTTTTCTGAAAACAAACAAAGGTTCAGAAAGCGATAATAAAAAAAGGATAGATATG","POTU69","Eukaryota","Streptophyta","Magnoliopsida","Rosales","Rhamnaceae","Maesopsis","Maesopsis eminii"
+"43","POTU72","g","OTU13","ATCCTGTTTTTCGAAAACAAACAAAGGTTCGTAAAGACAGAATCAGAATACAAAAACAAAAG","POTU72","Eukaryota","Streptophyta","Magnoliopsida",NA,NA,NA,NA
+"44","POTU73","g","OTU9","ATCCTGTTTTTCGAAAACAAATAAAAATAAAGATTCCGAAAGCAAAAATAGAAAAAGGATAG","POTU73","Eukaryota","Streptophyta","Magnoliopsida",NA,NA,NA,NA
+"45","POTU74","g","OTU16","ATCCTGTTTTTCGAAAACAAGCAAAGGTTCGTAAAGACAGAATCAGAATACAAAAACAAAAG","POTU74","Eukaryota","Streptophyta","Magnoliopsida","Malpighiales","Salicaceae","Casearia","Casearia arborea"
+"46","POTU76","g","OTU19","ATCCTTATTTTGAGAAAACAAAGGTTTATAAAACTAGAATAAAAAAG","POTU76","Eukaryota","Streptophyta","Magnoliopsida","Zingiberales","Musaceae","Musa",NA
+"47","POTU77","g","OTU23","ATCCTTGTTTTGAGAAAAAAG","POTU77","Eukaryota","Streptophyta","Magnoliopsida","Alismatales","Araceae","Xanthosoma",NA
+"48","POTU79","g","OTU117","ATCCTTTTTTCTCAAAACAAAGGTTCAGAAAACGAAAAAAAAAG","POTU79","Eukaryota","Streptophyta","Magnoliopsida","Lamiales","Bignoniaceae","Tabebuia","Tabebuia heterophylla"
+"49","POTU8","g","OTU178","ATCCCGTTTTCCGAAAGCAAAGAAAAGTTAAGAAAGCGAGAATAAAAAAAG","POTU8","Eukaryota","Streptophyta","Magnoliopsida","Fabales","Fabaceae","Pterocarpus","Pterocarpus officinalis"
+"50","POTU80","g","OTU201","ATCCTTTTTTTTCGAAGACAAACAAAGATTTAGAAAGCGAAAATAAAAAAAG","POTU80","Eukaryota","Streptophyta","Magnoliopsida","Ericales","Cyrillaceae","Cyrilla","Cyrilla racemiflora"
+"51","POTU81","g","OTU156","ATCTCGTATTGTATGACTCAAATGAATTTTGGGCGATGAGGCGA","POTU81","Eukaryota","Streptophyta","Polypodiopsida",NA,NA,NA,NA
+"52","POTU82","g","OTU56","ATCTCGTTTTATGAAAACAAAACAAACAGGGGTTCAGAAAGTGAGAAAGGG","POTU82","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Sapindaceae","Matayba","Matayba domingensis"
+"53","POTU83","g","OTU164","ATCTTCTTTTCCAAGAACAAACAAGGGTTCAGAAAGTGAAAAAGGGA","POTU83","Eukaryota","Streptophyta","Magnoliopsida","Sapindales","Rutaceae","Zanthoxylum","Zanthoxylum martinicense"
+"54","POTU84","g","OTU12","ATCTTGTTTTCTGAAAGCAAAAGTTCAGAAAGTGAAAAAAAAAGG","POTU84","Eukaryota","Streptophyta","Magnoliopsida","Laurales","Lauraceae","Beilschmiedia","Beilschmiedia pendula"
+"55","POTU85","g","OTU32","ATCTTTATTTGTTTTTTTATAAACCAAAGCTTTGGTTTATAAAAAAACAAAACAAACTAGAATCAAAAATCAAAAAG","POTU85","Eukaryota","Streptophyta",NA,NA,NA,NA,NA
+"56","POTU86","g","OTU3","ATCTTTATTTTGAGAAAACAAGGGTTTATAAAACTAGAATAAAAAAAG","POTU86","Eukaryota","Streptophyta","Magnoliopsida","Arecales","Arecaceae",NA,NA
+"57","POTU89","g","OTU289","ATCTTTTCTTTTCTTTTTAGAAAAGTTCGAACTAGAATATAGTTCGAGTTAGTATATAACTAGAATAAAAAG","POTU89","Eukaryota","Streptophyta","Magnoliopsida","Poales","Cyperaceae","Scleria","Scleria secans"
+"58","POTU9","g","OTU4","ATCCGGTTTTATGAAAACAAACAAGGGTTCAGAAAGCGATAATAAAAAAGGAAAG","POTU9","Eukaryota","Streptophyta","Magnoliopsida","Rosales","Urticaceae","Cecropia","Cecropia schreberiana"
+"59","POTU91","g","OTU66","CTCCTGCTTTCCAAAAGGGAGAATAAATAAAG","POTU91","Eukaryota","Streptophyta","Magnoliopsida","Caryophyllales","Polygonaceae","Coccoloba",NA
+"60","POTU92","g","OTU42","CTCCTTTTTTCTTTTGAAAAGAAAAAAAAATAAGGGTTCAGAAAGCAAGAAAAAAAG","POTU92","Eukaryota","Streptophyta","Magnoliopsida","Caryophyllales","Nyctaginaceae","Pisonia",NA
