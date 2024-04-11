@@ -1,0 +1,122 @@
+OTU,superkingdom,phylum,class,order,family,genus,species,speciesOTU,Comments_bob
+OTU1,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_1,
+OTU2,Eukaryota,Streptophyta,Magnoliopsida,Apiales,Araliaceae,Araliaceae family,Araliaceae family,Araliaceae family_2,
+OTU3,Eukaryota,Streptophyta,Magnoliopsida,Arecales,Arecaceae,Arecaceae family,Arecaceae family,Arecaceae family_3,
+OTU4,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Urticaceae,Cecropia,Cecropia schreberiana,Cecropia schreberiana_4,
+OTU5,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Moraceae,Ficus,Ficus genus,Ficus genus_5,
+OTU6,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Meliaceae,Meliaceae family,Meliaceae family,Meliaceae family_6,
+OTU7,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Burseraceae,Dacryodes,Dacryodes excelsa,Dacryodes excelsa_7,
+OTU8,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_8,
+OTU9,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_9,
+OTU10,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Combretaceae,Terminalia,Terminalia tetraphylla,Terminalia tetraphylla_10,Probably synonym for BUCTET
+OTU11,Eukaryota,Streptophyta,Magnoliopsida,Laurales,Lauraceae,Ocotea,Ocotea genus,Ocotea genus_11,
+OTU12,Eukaryota,Streptophyta,Magnoliopsida,Laurales,Lauraceae,Beilschmiedia,Beilschmiedia pendula,Beilschmiedia pendula_12,
+OTU13,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_13,
+OTU15,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_14,
+OTU16,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Salicaceae,Casearia,Casearia arborea,Casearia arborea_15,
+OTU17,Eukaryota,Streptophyta,Magnoliopsida,Fabales,Fabaceae,Inga,Inga vera,Inga vera_16,
+OTU18,Eukaryota,Streptophyta,Magnoliopsida,Piperales,Piperaceae,Piper,Piper glabrescens,Piper glabrescens_17,
+OTU19,Eukaryota,Streptophyta,Magnoliopsida,Zingiberales,Musaceae,Musa,Musa genus,Musa genus_18,
+OTU20,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Phyllanthaceae,Margaritaria,Margaritaria nobilis,Margaritaria nobilis_19,
+OTU21,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Myrtaceae,Eugenia,Eugenia domingensis,Eugenia domingensis_20,
+OTU22,Eukaryota,Streptophyta,Magnoliopsida,Ericales,Sapotaceae,Manilkara,Manilkara bidentata,Manilkara bidentata_21,
+OTU23,Eukaryota,Streptophyta,Magnoliopsida,Alismatales,Araceae,Xanthosoma,Xanthosoma genus,Xanthosoma genus_22,Not a tree
+OTU24,Eukaryota,Streptophyta,Magnoliopsida,Dilleniales,Dilleniaceae,Dilleniaceae family,Dilleniaceae family,Dilleniaceae family_23,Nothing in this family recorded from LFDP - perhaps some ornamental nearby?
+OTU25,Eukaryota,Streptophyta,Magnoliopsida,Vitales,Vitaceae,Vitaceae family,Vitaceae family,Vitaceae family_24,Vines; the only species in this family recorded from LFDP is Cissus verticillata (L.) Nicolson & C. E. Jarvis
+OTU26,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Sapindaceae,Sapindaceae family,Sapindaceae family,Sapindaceae family_25,A few species in this family in LFDP
+OTU27,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Malpighiaceae,Byrsonima,Byrsonima spicata,Byrsonima spicata_26,
+OTU28,Eukaryota,Streptophyta,Magnoliopsida,Lamiales,Oleaceae,Chionanthus,Chionanthus domingensis,Chionanthus domingensis_27,
+OTU29,Eukaryota,Streptophyta,Magnoliopsida,Asterales,Asterales order,Asterales order,Asterales order,Asterales order_28,I don't think there are any trees in this order?
+OTU30,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Salicaceae,Homalium,Homalium racemosum,Homalium racemosum_29,
+OTU31,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Melastomataceae,Melastomataceae family,Melastomataceae family,Melastomataceae family_30,
+OTU32,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_31,Not sure what all this phylum includes?
+OTU33,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Anacardiaceae,Mangifera,Mangifera indica,Mangifera indica_32,
+OTU34,Eukaryota,Streptophyta,Magnoliopsida,Boraginales,Cordiaceae,Cordia,Cordia genus,Cordia genus_33,
+OTU36,Eukaryota,Streptophyta,Magnoliopsida,Oxalidales,Connaraceae,Rourea,Rourea surinamensis,Rourea surinamensis_34,Common vine
+OTU37,Eukaryota,Streptophyta,Magnoliopsida,Magnoliales,Annonaceae,Oxandra,Oxandra laurifolia,Oxandra laurifolia_35,
+OTU38,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Melastomataceae,Melastomataceae family,Melastomataceae family,Melastomataceae family_36,
+OTU40,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Alchorneopsis,Alchorneopsis floribunda,Alchorneopsis floribunda_37,
+OTU41,Eukaryota,Streptophyta,Magnoliopsida,Solanales,Convolvulaceae,Convolvulaceae family,Convolvulaceae family,Convolvulaceae family_38,Vines
+OTU42,Eukaryota,Streptophyta,Magnoliopsida,Caryophyllales,Nyctaginaceae,Pisonia,Pisonia genus,Pisonia genus_39,One tree species (Pisonia borinquena unpubl.)
+OTU43,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Psychotria,Psychotria genus,Psychotria genus_40,
+OTU44,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Moraceae,Ficus,Ficus genus,Ficus genus_41,
+OTU45,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_42,
+OTU46,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_43,
+OTU47,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_44,
+OTU48,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Ixora,Ixora ferrea,Ixora ferrea_45,
+OTU50,Eukaryota,Streptophyta,Magnoliopsida,Poales,Poaceae,Poaceae family,Poaceae family,Poaceae family_46,Grasses
+OTU51,Eukaryota,Streptophyta,Magnoliopsida,Apiales,Araliaceae,Araliaceae family,Araliaceae family,Araliaceae family_47,
+OTU52,Eukaryota,Streptophyta,Magnoliopsida,Commelinales,Commelinaceae,Commelina,Commelina genus,Commelina genus_48,Herbacious
+OTU55,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_49,
+OTU56,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Sapindaceae,Matayba,Matayba domingensis,Matayba domingensis_50,
+OTU58,Eukaryota,Streptophyta,Magnoliopsida,Asparagales,Orchidaceae,Orchidaceae family,Orchidaceae family,Orchidaceae family_51,Herbacious (orchids)
+OTU59,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Burseraceae,Protium,Protium balsamiferum,Protium balsamiferum_52,Synonym with TETBAL
+OTU60,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Burseraceae,Burseraceae family,Burseraceae family,Burseraceae family_53,
+OTU62,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Moraceae,Pseudolmedia,Pseudolmedia spuria,Pseudolmedia spuria_54,
+OTU63,Eukaryota,Streptophyta,Magnoliopsida,Poales,Poaceae,Poaceae family,Poaceae family,Poaceae family_55,Grasses
+OTU64,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Faramea,Faramea occidentalis,Faramea occidentalis_56,
+OTU65,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Melastomataceae,Miconia,Miconia genus,Miconia genus_57,
+OTU66,Eukaryota,Streptophyta,Magnoliopsida,Caryophyllales,Polygonaceae,Coccoloba,Coccoloba genus,Coccoloba genus_58,
+OTU68,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_59,
+OTU71,Eukaryota,Streptophyta,Magnoliopsida,Vitales,Vitaceae,Cissus,Cissus genus,Cissus genus_60,Vines
+OTU72,Eukaryota,Streptophyta,Magnoliopsida,Magnoliales,Annonaceae,Annonaceae family,Annonaceae family,Annonaceae family_61,
+OTU74,Eukaryota,Streptophyta,Magnoliopsida,Asparagales,Orchidaceae,Orchidaceae family,Orchidaceae family,Orchidaceae family_62,Orchids herbacious
+OTU75,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Myrtaceae,Myrtaceae family,Myrtaceae family,Myrtaceae family_63,
+OTU76,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Rubiaceae family,Rubiaceae family,Rubiaceae family_64,
+OTU77,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Sapium,Sapium laurocerasus,Sapium laurocerasus_65,
+OTU79,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Thelypteridaceae,Cyclogramma,Cyclogramma omeiensis,Cyclogramma omeiensis_66,Fern
+OTU81,Eukaryota,Streptophyta,Magnoliopsida,Lamiales,Oleaceae,Oleaceae family,Oleaceae family,Oleaceae family_67,
+OTU82,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Malpighiaceae,Malpighiaceae family,Malpighiaceae family,Malpighiaceae family_68,
+OTU83,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Salicaceae,Casearia,Casearia genus,Casearia genus_69,
+OTU85,Eukaryota,Streptophyta,Magnoliopsida,Magnoliales,Annonaceae,Guatteria,Guatteria caribaea,Guatteria caribaea_70,
+OTU87,Eukaryota,Streptophyta,Magnoliopsida,Zingiberales,Zingiberaceae,Zingiberaceae family,Zingiberaceae family,Zingiberaceae family_71,Gingers (herbacious)
+OTU90,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_72,
+OTU92,Eukaryota,Streptophyta,Magnoliopsida,Fagales,Fagaceae,Fagaceae family,Fagaceae family,Fagaceae family_73,I don't think anything in this family is in PR - lab contamination?
+OTU93,Eukaryota,Streptophyta,Magnoliopsida,Asterales,Asterales order,Asterales order,Asterales order,Asterales order_74,I don't think there are any trees in this order?
+OTU94,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Phyllanthaceae,Phyllanthaceae family,Phyllanthaceae family,Phyllanthaceae family_75,Only one tree in LFDP in this family (Margaritaria nobilis L. f.)
+OTU96,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_76,
+OTU98,Eukaryota,Streptophyta,Polypodiopsida,Cyatheales,Cyatheaceae,Cyathea,Cyathea arborea,Cyathea arborea_77,Tree fern
+OTU100,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Rubiaceae family,Rubiaceae family,Rubiaceae family_78,
+OTU101,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Rosaceae,Rosaceae family,Rosaceae family,Rosaceae family_79,Not aware of any trees in PR (at least LFDP) in this family
+OTU102,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Meliaceae,Meliaceae family,Meliaceae family,Meliaceae family_80,
+OTU103,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Chione,Chione genus,Chione genus_81,
+OTU104,Eukaryota,Streptophyta,Magnoliopsida,Fabales,Fabaceae,Ormosia,Ormosia krugii,Ormosia krugii_82,
+OTU106,Eukaryota,Streptophyta,Magnoliopsida,Poales,Poaceae,Bambusa,Bambusa vulgaris,Bambusa vulgaris_83,Bamboo
+OTU107,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Rubiaceae,Chassalia,Chassalia sp. cm26,Chassalia sp. cm26_84,Not recorded from LFDP (not even sure about PR) - ornamental?
+OTU108,Eukaryota,Streptophyta,Pinopsida,Pinopsida class,Pinopsida class,Pinopsida class,Pinopsida class,Pinopsida class_85,Pines.  Could be Caribbean pine (not in LFDP but not that far away) or lab contamination.
+OTU109,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Rhamnaceae,Maesopsis,Maesopsis eminii,Maesopsis eminii_86,"Not known in LFDP, could be nearby planted but few records from PR"
+OTU112,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Ochnaceae,Ochnaceae family,Ochnaceae family,Ochnaceae family_87,"Only species known around LFDP in this family is Sauvagesia erecta L., which is herbacious"
+OTU113,Eukaryota,Streptophyta,Magnoliopsida,Zingiberales,Musaceae,Musaceae family,Musaceae family,Musaceae family_88,Banana
+OTU115,Eukaryota,Streptophyta,Magnoliopsida,Rosales,Urticaceae,Urera,Urera baccifera,Urera baccifera_89,
+OTU117,Eukaryota,Streptophyta,Magnoliopsida,Lamiales,Bignoniaceae,Tabebuia,Tabebuia heterophylla,Tabebuia heterophylla_90,
+OTU119,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Melastomataceae,Melastomataceae family,Melastomataceae family,Melastomataceae family_91,
+OTU120,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_92,
+OTU121,Eukaryota,Streptophyta,Magnoliopsida,Fagales,Fagales order,Fagales order,Fagales order,Fagales order_93,Not much in this order in PR - could be lab contamination
+OTU123,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Thelypteridaceae,Thelypteridaceae family,Thelypteridaceae family,Thelypteridaceae family_94,Ferns
+OTU124,Eukaryota,Streptophyta,Magnoliopsida,Apiales,Apiaceae,Apiaceae family,Apiaceae family,Apiaceae family_95,Herbacious
+OTU126,Eukaryota,Streptophyta,Magnoliopsida,Myrtales,Melastomataceae,Henriettea,Henriettea squamulosa,Henriettea squamulosa_96,
+OTU128,Eukaryota,Streptophyta,Bryopsida,Hypnales,Hypnales order,Hypnales order,Hypnales order,Hypnales order_97,Feather mosses
+OTU129,Eukaryota,Streptophyta,Magnoliopsida,Lamiales,Lamiales order,Lamiales order,Lamiales order,Lamiales order_98,
+OTU130,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Pteridaceae,Adiantum,Adiantum genus,Adiantum genus_99,Fern
+OTU139,Eukaryota,Streptophyta,Polypodiopsida,Cyatheales,Cyatheaceae,Cyatheaceae family,Cyatheaceae family,Cyatheaceae family_100,Tree fern
+OTU141,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Euphorbiaceae,Euphorbiaceae family,Euphorbiaceae family,Euphorbiaceae family_101,
+OTU142,Eukaryota,Streptophyta,Magnoliopsida,Laurales,Laurales order,Laurales order,Laurales order,Laurales order_102,
+OTU145,Eukaryota,Streptophyta,Magnoliopsida,Fabales,Fabaceae,Cassia,Cassia fistula,Cassia fistula_103,Not sure if in LFDP but probably nearby
+OTU150,Eukaryota,Streptophyta,Magnoliopsida,Fabales,Fabaceae,Fabaceae family,Fabaceae family,Fabaceae family_104,
+OTU151,Eukaryota,Streptophyta,Magnoliopsida,Asparagales,Orchidaceae,Orchidaceae family,Orchidaceae family,Orchidaceae family_105,
+OTU153,Eukaryota,Streptophyta,Magnoliopsida,Malpighiales,Rhizophoraceae,Cassipourea,Cassipourea guianensis,Cassipourea guianensis_106,
+OTU156,Eukaryota,Streptophyta,Polypodiopsida,Polypodiopsida class,Polypodiopsida class,Polypodiopsida class,Polypodiopsida class,Polypodiopsida class_107,ferns
+OTU158,Eukaryota,Streptophyta,Magnoliopsida,Gentianales,Gentianales order,Gentianales order,Gentianales order,Gentianales order_108,probably herbacious
+OTU160,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Sapindales order,Sapindales order,Sapindales order,Sapindales order_109,
+OTU161,Eukaryota,Streptophyta,Magnoliopsida,Santalales,Viscaceae,Viscaceae family,Viscaceae family,Viscaceae family_110,Mistletoes
+OTU163,Eukaryota,Streptophyta,Magnoliopsida,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class,Magnoliopsida class_111,
+OTU164,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Rutaceae,Zanthoxylum,Zanthoxylum martinicense,Zanthoxylum martinicense_112,
+OTU166,Eukaryota,Streptophyta,Magnoliopsida,Malvales,Malvaceae,Malvaceae family,Malvaceae family,Malvaceae family_113,
+OTU167,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_114,
+OTU168,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Nephrolepidaceae,Nephrolepis,Nephrolepis biserrata,Nephrolepis biserrata_115,Fern
+OTU170,Eukaryota,Streptophyta,Magnoliopsida,Fagales,Betulaceae,Betulaceae family,Betulaceae family,Betulaceae family_116,Contamination
+OTU171,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_117,
+OTU172,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Polypodiaceae,Campyloneurum,Campyloneurum fallax,Campyloneurum fallax_118,Fern
+OTU174,Eukaryota,Streptophyta,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum,Streptophyta phylum_119,
+OTU175,Eukaryota,Streptophyta,Magnoliopsida,Sapindales,Meliaceae,Meliaceae family,Meliaceae family,Meliaceae family_120,
+OTU176,Eukaryota,Streptophyta,Polypodiopsida,Polypodiales,Blechnaceae,Blechnum,Blechnum genus,Blechnum genus_121,Fern
