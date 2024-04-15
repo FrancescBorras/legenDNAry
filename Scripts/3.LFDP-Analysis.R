@@ -52,6 +52,7 @@ for(r in 1:20){
   # stem.dist <- vegdist(decostand(stem.otu$ba[[r]][1:39,], "total", 1), method='jaccard')
   manres[r,] <- round(ecodist::mantel(dnamat.dist ~ stem.dist), 3)
 }
+
 colnames(manres) <- names(ecodist::mantel(dnamat.dist ~ stem.dist))
 rownames(manres) <- seq(5, 100, 5)
 manres <- as.data.frame(manres)
@@ -96,7 +97,7 @@ abline(h=c(0.05, 0.95))
 est <- matrix(nrow=20, ncol=3)
 
 for(r in 1:20){
-  focdat <- stem.otu$abund[[r]]
+  focdat <- stem.otu$ba[[r]]
   res <- cor.test(rank(colSums(focdat)), rank(colSums(dnamat)))
   est[r,] <- c(res$estimate, res$conf.int)
 }
@@ -104,6 +105,7 @@ for(r in 1:20){
 plot(est[,1], ylim=c(-1,1))
 segments(1:20, est[,2], 1:20, est[,3])
 abline(h=0, lty=2)
+
 
 
 
@@ -126,14 +128,14 @@ for(r in 1:20){
     balaccuracy.obs[site,r] <- (confus.obs$byClass[1] + confus.obs$byClass[2])/2
     
     balaccuracy.rand <- vector()
-    
+
     for(s in 1:1000){
-      confus.rand <- confusionMatrix(table(dnamat.pa[site,], 
+      confus.rand <- confusionMatrix(table(dnamat.pa[site,],
                                            1*(stem.otu$abund[[r]][-c(1:39),] > 0)[s,]))
-      
+
       balaccuracy.rand[s] <- (confus.rand$byClass[1] + confus.rand$byClass[2])/2
     }
-    
+
     balaccuracy.ses[site,r] <- (balaccuracy.obs[site,r] - mean(balaccuracy.rand)) / sd(balaccuracy.rand)
   }
 }
@@ -147,16 +149,12 @@ axis(1, labels=names(stem.otu$abund), at=1:20)
 axis(2)
 box()
 
-# Line plot (probably not very good)
-plot(c(0,20), range(balaccuracy.ses), pch=NA, axes=F)
+# Look at raw balanced accuracy results
+boxplot(balaccuracy.obs, main="Observed Balanced Accuracy", 
+        xlab="Radius (m)", axes=F, col=cp)
 axis(1, labels=names(stem.otu$abund), at=1:20)
 axis(2)
 box()
-polygon(c(-1,200,200,-1), c(-1.96,-1.96, 1.96, 1.96), col='grey', lty=2)
-for(i in 1:39){
-  lines(1:20, balaccuracy.ses[i,], col=plasma(39)[i])
-}
-
 
 
 ########################################################
@@ -177,7 +175,7 @@ for(r in 1:20){
   res[,r] <- diag(tmpres)
 }
 
-boxplot(res, ylab="Raup Dissimilarity", xlab="Radius (m)", axes=F)
+boxplot(res, ylab="Raup Dissimilarity", xlab="Radius (m)", axes=F, col=cp)
 axis(1, labels=names(stem.otu$abund), at=1:20)
 axis(2)
 
@@ -352,7 +350,7 @@ segments(seq(5,100,5), out[,4],
 
 # Quick plot for a given spatial scale (no rarefaction)
 plot(rowSums(stem.otu$abund[[20]][1:39,]>0),
-     rowSums(dnamat>0))
+     rowSums(dnamat.pa))
 
 # Quick plot for a given spatial scale after rarefaction
 plot(rarefy(stem.otu$abund[[20]][1:39,], min(rowSums(stem.otu$abund[[20]][1:39,]))),
