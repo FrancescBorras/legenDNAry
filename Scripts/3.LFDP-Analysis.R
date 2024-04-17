@@ -5,6 +5,8 @@ library(compositions)
 library(viridis)
 library(ecodist)
 
+
+
 ### Load summary data
 dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240411.RDA")[[1]]
 stem.otu <- readRDS("Processed_data/stem-soil-39pt-data-20240411.RDA")[[2]]
@@ -40,7 +42,9 @@ cp <- rev(viridis(20))
 ### Mantel test of stem distance matrix and dna distance matrix
 ########################################################
 
-# Lots to consider about how to transform the data and which distance metric to use...
+# Note: Lots to consider about how to transform the data and which distance metric to use...
+
+# Note: If ecodist::mantel() function gives errors about dimensions, then you have to restart R and load ecodist package again. Another package ('proxies'?) seems to change the handling of distance objects.
 
 # dnamat.dist <- vegdist(clr(dnamat), method='euclidean')
 dnamat.dist <- vegdist(dnamat.pa, method='raup')
@@ -48,7 +52,7 @@ dnamat.dist <- vegdist(dnamat.pa, method='raup')
 
 manres <- matrix(nrow=20, ncol=6)
 for(r in 1:20){
-  stem.dist <- vegdist(stem.otu$ba[[r]][1:39,], method='raup')
+  stem.dist <- vegdist(stem.otu$ba[[r]][1:39,]>0, method='raup')
   # stem.dist <- vegdist(decostand(stem.otu$ba[[r]][1:39,], "total", 1), method='jaccard')
   manres[r,] <- round(ecodist::mantel(dnamat.dist ~ stem.dist), 3)
 }
@@ -57,10 +61,17 @@ colnames(manres) <- names(ecodist::mantel(dnamat.dist ~ stem.dist))
 rownames(manres) <- seq(5, 100, 5)
 manres <- as.data.frame(manres)
 
-plot(rownames(manres), manres$mantelr, ylim=range(manres[,5:6]), pch=16, 
-     xlab="Radius (m)", ylab="Mantel correlation")
+plot(rownames(manres), manres$mantelr, ylim=range(manres[,5:6]), 
+     pch=ifelse(manres$pval3<0.05, 21, 16), 
+     xlab="Radius (m)", ylab="Mantel correlation",
+     main="eDNA p/a dissimilarity vs. Stem basal area dissimilarity")
 segments(seq(5, 100, 5), manres$`llim.2.5%`, seq(5, 100, 5), manres$`ulim.97.5%`)
+points(rownames(manres), manres$mantelr, ylim=range(manres[,5:6]), 
+     pch=ifelse(manres$pval3<0.05, 21, 16), bg=ifelse(manres$pval3<0.05, 'white', 1),
+     xlab="Radius (m)", ylab="Mantel correlation")
 abline(h=0, lty=2)
+
+# Essentially, it seems that sites that are more dissimilar from one another in terms of DNA presence/absence data are also more dissimilar in terms of stem presence/absence for spatial radii of 10,15,25,30 m.  These dissimilarities are not significantly correlated for other spatial scales.
 
 
 ########################################################
@@ -73,17 +84,40 @@ prores <- list()
 
 for(r in 1:20){
   
-  dnaord <- metaMDS(dnamat.pa, dist="raup")
+  # dnaord <- metaMDS(dnamat.pa, distance="raup")
   # dnaord <- metaMDS(clr(dnamat), dist='euclidean')
   
-  stemord <- metaMDS(vegdist(stem.otu$ba[[r]][1:39,], method='raup'))
+  # stemord <- metaMDS(1*(stem.otu$abund[[r]][1:39,]>0), distance="raup")
   # stemord <- metaMDS(stem.otu$ba[[r]][1:39,])
-                       
-  prores[[r]] <- protest(stemord, dnaord)
+
+  # prores[[r]] <- protest(dnaord, stemord)
+  # prores[[r]] <- protest(dnamat.pa, 1*(stem.otu$abund[[r]][1:39,]>0))
+  prores[[r]] <- protest(clr(dnamat), stem.otu$abund[[r]][1:39,])
+  
 }
 
-plot(sapply(prores, function(x) x$signif), ylim=c(0,1))
-abline(h=c(0.05, 0.95))
+# A 'significant' p value (<0.05) indicates that the two matrices are similar
+# A 'nonsignificant' p value (>0.05) indicates that the two matrices are different
+
+vals <- sapply(prores, function(x) x$signif)
+plot(vals, ylim=c(0,1),
+     pch=ifelse(vals < 0.05, 16, 21))
+abline(h=0.05, lty=2)
+
+# With the presence-absence data matrices (both dna and stem), p<0.05 for all spatial scales
+# With the metaMDS ordinations on presence-absence data, p>0.05 for 5m
+# Basically most evidence points to the two matrices being similar across scales with p/a data.
+# With abundance data (clr(dna) and raw stem abund), all p vals are >0.05 (matrices are diff)
+
+
+### DEMO OF HOW THE PROTEST WORKS...
+# set.seed(123) 
+# self <- matrix(rnorm(2000), ncol = 200, nrow = 10) 
+# other <- matrix(rnorm(2000), ncol = 200, nrow = 10) 
+# protest(self, self, permutations=100)
+# protest(self, other, permutations=100)
+
+
 
 
 ########################################################
