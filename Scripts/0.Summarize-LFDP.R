@@ -62,7 +62,7 @@ results <- list(abund=abund,
                 ba=ba,
                 nearest_sp=nntrees)
 
-saveRDS(results, "full-results-test.RDA")
+saveRDS(results, "Raw_data/LFDP2016-extract-20240423.RDA")
 
 # 6. PLEASE SEND THE OUTPUT FILE "full-results-test.RDA" to robert.muscarella@ebc.uu.se
 

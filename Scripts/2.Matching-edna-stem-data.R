@@ -24,6 +24,9 @@ d <- prune_taxa(otu.potu.link[[6]]$OTU, d)
 
 ### Load the LFDP 2023 census extract data
 tree <- readRDS("Raw_data/LFDP2023-extract-20240327.RDA")
+tree16 <- readRDS("Raw_data/LFDP2016-extract-20240423.RDA")
+
+
 
 # list of species codes observed in tree data
 # writexl::write_xlsx(data.frame(code=colnames(tree$abund$`100`)), "Raw_data/LFDP2023-codes.xlsx")
@@ -63,6 +66,8 @@ d <- prune_samples(grepl("normal", d@sam_data$factorlevel), d)
 # Get coordinates from 39 sample points included
 xy <- d@sam_data[grepl("normal", d@sam_data$factorlevel),c("X","Y")]
 
+# write.csv(xy, file="Raw_data/LFDP-sample39-coordinates.csv")
+
 ### Make the rows of the stem data match the rows of the eDNA otu-table data
 ## *THIS FIRST BLOCK WAS TO JUST TO EITHER ABUNDANCE ONLY, NEW BLOCKS BELOW DO ABUND, BA, AND NN
 # stem <- lapply(tree$abund, function(x) x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),])
@@ -70,13 +75,14 @@ xy <- d@sam_data[grepl("normal", d@sam_data$factorlevel),c("X","Y")]
 #   rownames(stem[[i]]) <- rownames(d@otu_table)
 # }
 
+
+### Create stem data for 2023
 stem_abund <- lapply(tree$abund, function(x) {
   rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
         x[88:1087,])})
 for(i in seq_along(stem_abund)){
   rownames(stem_abund[[i]]) <- c(rownames(d@otu_table), paste0('random',1:1000))
 }
-
 
 stem_ba <- lapply(tree$ba, function(x) {
   rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
@@ -90,6 +96,31 @@ stem_nn <- rbind(tree$nearest_sp[match(paste(xy$X, xy$Y),
 rownames(stem_nn) <- c(rownames(d@otu_table), paste0('random',1:1000))
 
 stem <- list(abund=stem_abund, ba=stem_ba, nearest_sp=stem_nn)
+
+
+#### Create stem data for 2016
+stem_abund16 <- lapply(tree16$abund, function(x) {
+  rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
+        x[88:1087,])})
+
+for(i in seq_along(stem_abund16)){
+  rownames(stem_abund16[[i]]) <- c(rownames(d@otu_table), paste0('random',1:1000))
+}
+
+stem_ba16 <- lapply(tree16$ba, function(x) {
+  rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
+        x[88:1087,])})
+
+for(i in seq_along(stem_ba16)){
+  rownames(stem_ba16[[i]]) <- c(rownames(d@otu_table), paste0('random',1:1000))
+}
+
+stem_nn16 <- rbind(tree16$nearest_sp[match(paste(xy$X, xy$Y),
+                                       paste(sample_xy$PX, sample_xy$PY)),], tree16$nearest_sp[88:1087,])
+rownames(stem_nn16) <- c(rownames(d@otu_table), paste0('random',1:1000))
+
+stem16 <- list(abund=stem_abund16, ba=stem_ba16, nearest_sp=stem_nn16)
+
 
 
 
@@ -158,6 +189,49 @@ for(r in seq_along(stem$abund)){
 
 
 
+
+##### THIS BLOCK COLLAPSES THE 2016 STEM DATA TO THE gOTU CLUSTERS
+stem.otu16 <- list()
+for(r in seq_along(stem16$abund)){
+  
+  # Initialize a matrix to hold collapsed results for a given radius
+  tmat_abund <- matrix(ncol=length(codes.collapse.list), nrow=1039)
+  tmat_ba <- matrix(ncol=length(codes.collapse.list), nrow=1039)
+  tmat_nn <- matrix(ncol=length(codes.collapse.list), nrow=1039)
+  
+  # loop to collapse taxa in phyloseq objects
+  for(i in seq_along(codes.collapse.list)){
+    tmp_abund <- stem16$abund[[r]][,which(colnames(stem16$abund[[1]]) %in% codes.collapse.list[[i]])]
+    tmp_ba <- stem16$ba[[r]][,which(colnames(stem16$ba[[1]]) %in% codes.collapse.list[[i]])]
+    tmp_nn <- stem16$nearest_sp[,which(colnames(stem16$nearest_sp) %in% codes.collapse.list[[i]])]
+    
+    if(is.matrix(tmp_abund)){
+      tmat_abund[,i] <- rowSums(tmp_abund)
+      tmat_ba[,i] <- rowSums(tmp_ba)
+      tmat_nn[,i] <- rowSums(tmp_nn)
+    } else {
+      tmat_abund[,i] <- tmp_abund
+      tmat_ba[,i] <- tmp_ba
+      tmat_nn[,i] <- tmp_nn
+    }
+  }
+  
+  tmat_abund <- as.data.frame(tmat_abund)
+  tmat_ba <- as.data.frame(tmat_ba)
+  tmat_nn <- as.data.frame(tmat_nn)
+  
+  names(tmat_nn) <- names(tmat_ba) <- names(tmat_abund) <- names(codes.collapse.list)
+  rownames(tmat_nn) <- rownames(tmat_ba) <- rownames(tmat_abund) <- rownames(stem16$abund[[1]])
+  
+  stem.otu16$abund[[r]] <- tmat_abund
+  stem.otu16$ba[[r]] <- tmat_ba
+  stem.otu16$nn <- tmat_nn
+  
+  names(stem.otu16$ba)[r] <- names(stem.otu16$abund)[r] <- names(stem16$abund)[r]
+}
+
+
+
 ### To make the columns match, and add zero columns to OTU data
 
 # The new phyloseq object should have these OTUs as colnames
@@ -165,6 +239,7 @@ collapsed.otus <- unlist(lapply(otus.collapse.list, function(x) x[!is.na(x)][1])
 
 # The stem data has these names exactly
 all(names(collapsed.otus) == names(stem.otu$abund[[1]]))
+all(names(collapsed.otus) == names(stem.otu16$abund[[1]]))
 
 # Some gOTU names are in the soil data but not the collapsed list because they aren't trees
 # ** NEED TO CHECK THIS AGAIN AFTER GLENN REDOES THINGS B/C SOMETHING IS WITH e.g. POTU66
@@ -205,8 +280,8 @@ traits <- as.data.frame(traits)
 ### SAVE DATA FOR DOWNSTREAM ANALYSES
 #################################
 
-saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits), 
-        "Processed_data/stem-soil-39pt-data-20240411.RDA")
+saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), 
+        "Processed_data/stem-soil-39pt-data-20240423.RDA")
 
 
 
