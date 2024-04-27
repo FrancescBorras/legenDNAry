@@ -3,20 +3,14 @@ library(googlesheets4)
 library(EDIutils)
 
 ### Load data from Glenn
-load("Raw_data/CescPRdata.RData")
+load("Raw_data/CescPRdata_v1.RData")
 
 ### Load link between OTUs and RefIDs
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
+otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
-### Fix the MANBID/SLOBER mixup
-otu.potu.link[[6]]$abundance[otu.potu.link[[6]]$genus %in% "Manilkara"] <- "POTU66"
-otu.potu.link[[6]]$abundance[otu.potu.link[[6]]$Genus %in% "POTU66"] <- "POTU56"
-### DELETE PSYBER and RONPOR
-otu.potu.link[[6]] <- otu.potu.link[[6]][!otu.potu.link[[6]]$abundance %in% "POTU72",]
-otu.potu.link[[6]] <- otu.potu.link[[6]][!otu.potu.link[[6]]$abundance %in% "POTU75",]
+### ** GO TO SCRIPT 1.2Bob-filterOutReflists.R to get the next object **
 
 ### (For now) subset the main eDNA data to use
-# d <- R3phylo.plants.tax[[5]]
 d <- R1ref.lib.list[[6]]
 
 ### Prune phyloseq object to the OTUs that appear in the soil data AND correspond to the reference library
@@ -25,8 +19,6 @@ d <- prune_taxa(otu.potu.link[[6]]$OTU, d)
 ### Load the LFDP 2023 census extract data
 tree <- readRDS("Raw_data/LFDP2023-extract-20240327.RDA")
 tree16 <- readRDS("Raw_data/LFDP2016-extract-20240423.RDA")
-
-
 
 # list of species codes observed in tree data
 # writexl::write_xlsx(data.frame(code=colnames(tree$abund$`100`)), "Raw_data/LFDP2023-codes.xlsx")
@@ -242,7 +234,6 @@ all(names(collapsed.otus) == names(stem.otu$abund[[1]]))
 all(names(collapsed.otus) == names(stem.otu16$abund[[1]]))
 
 # Some gOTU names are in the soil data but not the collapsed list because they aren't trees
-# ** NEED TO CHECK THIS AGAIN AFTER GLENN REDOES THINGS B/C SOMETHING IS WITH e.g. POTU66
 qs <- colnames(d@otu_table)[!colnames(d@otu_table) %in% collapsed.otus]
 otu.potu.link[[6]][otu.potu.link[[6]]$OTU %in% qs,]
 
@@ -281,7 +272,7 @@ traits <- as.data.frame(traits)
 #################################
 
 saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), 
-        "Processed_data/stem-soil-39pt-data-20240423.RDA")
+        "Processed_data/stem-soil-39pt-data-20240426.RDA")
 
 
 

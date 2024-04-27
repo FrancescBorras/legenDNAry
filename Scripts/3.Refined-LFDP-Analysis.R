@@ -12,12 +12,14 @@ library(caret)
 library(compositions)
 library(viridis)
 library(ecodist)
+library(sf)
+library(spdep)
 
 ### Load data
-dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240411.RDA")[[1]]
-stem.23 <- readRDS("Processed_data/stem-soil-39pt-data-20240411.RDA")[[2]]
-stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240423.RDA")[[4]]
-traits <- readRDS("Processed_data/stem-soil-39pt-data-20240411.RDA")[[3]]
+dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[1]]
+stem.23 <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[2]]
+stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[4]]
+traits <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[3]]
 sampxy <- read.csv("Raw_data/LFDP-sample39-coordinates.csv", row.names = 1)
 
 ### Make presence absence matrices
@@ -67,6 +69,33 @@ plot(rank(colSums(stem.23$abund[[20]])), rank(colSums(dnamat.pa)))
 cor.test(rank(colSums(stem.23$abund[[20]])), rank(colSums(dnamat.pa)))
 
 
+### Species accumulation in spatial aggregations of DNA samples
+dxy <- dist(sampxy, 'euclidean')
+
+dxy <- st_as_sf(sampxy, coords = c("X", "Y"), remove=FALSE)
+
+# find distance-based neigbours, upper distance bound is set ti 0.2km,
+out <- list()
+rads <- seq(50,600,25)
+for(r in seq_along(rads)){
+  
+  dxynn <- dnearneigh(dxy, 0, rads[r])
+  
+  grps <- unique(lapply(include.self(dxynn), sort))
+  
+  tmp <- vector()
+  for(g in seq_along(grps)){
+    if(length(grps[[g]])>1){
+      tmp[g] <- sum(colSums(dnamat.pa[grps[[g]],])>0)
+    } else {
+      tmp[g] <- sum(dnamat.pa[grps[[g]],]>0)
+    }
+  }
+  out[[r]] <- tmp
+}
+
+
+
 
 ### Figure 1 - there are a variety of plots below; need to decide which to include
 
@@ -86,8 +115,9 @@ plot(colSums(stem.23$ba[[20]]),
      ylab="Sites detected in DNA",
      xlab="Total basal area (m^2) [log10]",
      pch=21, bg='grey')
+abline(h=no_gotu_stem, lty=2)
 
-# plot(colSums(stem.23$ba[[20]][1:39,]>0),
+# plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
 #      ylab="Sites detected in DNA",
 #      xlab="Sites detected in stem data",
@@ -114,39 +144,53 @@ plot(colSums(stem.23$ba[[20]]),
 # ypred <- predict(m1, newdata=nd, type="response")
 # lines(10^(nd$a), ypred, col='blue', lwd=2)
 
-# Species accumulation in stem data with radius around the sample points
+# TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
 b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
              xlab="Radius (m)", 
              ylab="Taxon richness", 
              xlim=c(-0.5,20), ylim=c(0,80))
 boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
 abline(v=0.25)
-abline(h=79, lty=2)
+abline(h=no_gotu_stem, lty=2)
 axis(1, at=-0.5, labels="DNA")
 
-# Species accumulation in DNA samples
-# plot(specaccum(dnamat.pa),
-#      xlab="Number of samples",
-#      ylab="Taxon richness", 
-#      ylim=c(0,80))
-# plot(specaccum(dnamat.pa)$richness, pch=21, bg='grey',
-#      xlab="Number of samples",
-#      ylab="Taxon richness", 
-#      ylim=c(0,80))
-# lines(specaccum(dnamat.pa)$richness+specaccum(dnamat.pa)$sd)
-# lines(specaccum(dnamat.pa)$richness-specaccum(dnamat.pa)$sd)
-# abline(h=79, lty=2)
+### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
+plot(specaccum(dnamat.pa),
+     xlab="Number of samples",
+     ylab="Taxon richness",
+     ylim=c(0,80))
 
-# Species accumulation in spatial aggregations of DNA samples
-df <- data.frame(sapply(out, "length<-", max(lengths(out))))
-colnames(df) <- rads
-boxplot(df, col=rev(viridis(ncol(df))), 
-        xlab="Aggregating Distance (m)", 
-        ylab="Taxon richness",
-        ylim=c(0,80))
-abline(h=79, lty=2)
+### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
+# df <- data.frame(sapply(out, "length<-", max(lengths(out))))
+# colnames(df) <- seq(5,100,5)
+# boxplot(df, col=rev(viridis(ncol(df))), 
+#         xlab="Aggregating Distance (m)", 
+#         ylab="Taxon richness",
+#         ylim=c(0, no_gotu_stem))
+# abline(h=no_gotu_stem, lty=2)
 
 dev.off()
+
+
+########################################################
+########################################################
+##################
+### LAND USE ZONE ANALYSIS
+##################
+########################################################
+########################################################
+
+# ....TBD Waiting on data summary back from Lora about the total abundance and basal area of species in these two categories
+
+low <- rownames(sampxy)[sampxy$CoverClass < 4]
+high <- rownames(sampxy)[sampxy$CoverClass == 4]
+
+# Species richness in different land-use categories
+sum(1 * (colSums(dnamat[sampxy$CoverClass < 4,])>0))
+sum(1 * (colSums(dnamat[sampxy$CoverClass == 4,])>0))
+
+
+
 
 
 
@@ -267,6 +311,11 @@ conf_stats_ses_list <- vector("list", length = 20)
 
 nruns <- 1000
 
+# Function to compute standardized effect size
+ses <- function(obs, rand){
+  return((obs - colMeans(rand))/apply(rand, 2, sd))
+}
+
 # Export the caret package to all nodes
 clusterEvalQ(cl, library(caret))
 
@@ -332,9 +381,6 @@ anova(m2_obs)
 m2_ses <- aov(as.numeric(ba_ses) ~ as.factor(rep(1:20, each=39)))
 anova(m2_ses)
 TukeyHSD(m2_ses)
-
-boxplot(ba_ses[,1], ba_ses[,7])
-t.test(ba_ses[,1], ba_ses[,7], paired=T)
 
 
 ### Figure 4
@@ -402,3 +448,6 @@ boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`),
 graphics::box()
 
 dev.off()
+
+
+
