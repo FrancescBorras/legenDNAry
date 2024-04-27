@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 Raw_data/Soil_eDNA_data/
+Raw_data/prFIA/.DS_Store
+.DS_Store
+Raw_data/.Rapp.history
