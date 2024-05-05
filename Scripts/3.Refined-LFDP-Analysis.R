@@ -22,6 +22,14 @@ stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[4]]
 traits <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[3]]
 sampxy <- read.csv("Raw_data/LFDP-sample39-coordinates.csv", row.names = 1)
 
+### Species code full plot summaries
+lfdp <- readRDS("Raw_data/LFDP2023-extract-v2-20240427.RDA")
+df <- readRDS("LFDP2016-extract-v2-20240427.RDA")
+
+### gOTU full lpot summaries
+lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
+lfdp16 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
+
 ### Make presence absence matrices
 dnamat.pa <- 1*(dnamat>0)
 stem.pa.list <- lapply(stem.23$abund, function(x) 1*(x>0))
@@ -29,6 +37,17 @@ stem.pa.list16 <- lapply(stem.16$abund, function(x) 1*(x>0))
 
 ### Color palette for plotting
 cp <- rev(viridis(20))
+
+
+### TRY DELETING THE EDGE SAMPLES
+# focsites <- rownames(sampxy)[sampxy$X<300 & sampxy$Y<450]
+# dnamat.pa <- dnamat.pa[rownames(dnamat.pa) %in% focsites,]
+# stem.23$abund <- lapply(stem.23$abund, function(x) x[rownames(x) %in% focsites,])
+# stem.23$ba <- lapply(stem.23$ba, function(x) x[rownames(x) %in% focsites,])
+# stem.23$nn <- stem.23$nn[rownames(stem.23$nn) %in% focsites,]
+
+
+
 
 
 ########################################################
@@ -43,79 +62,71 @@ cp <- rev(viridis(20))
 (no_gotu_dna <- sum(colSums(dnamat.pa)>0))
 
 # Total gOTUs in the stem data:
-(no_gotu_stem <- sum(colSums(stem.23$abund[[20]])>0))
+(no_gotu_stem <- sum(lfdp23$total_abund>0))
 
 ### Percent of gOTUs from stem data that are detected in DNA data
 (100 * (no_gotu_dna/no_gotu_stem))
 
 # Total abundance of stems per gOTU (as log count in 100 m radius around 39 points) vs.number of sites where gOTU was detected in the DNA
-plot(colSums(stem.23$abund[[20]]), colSums(dnamat.pa), log='x')
+plot(lfdp23$total_abund, colSums(dnamat.pa), log='x')
 
 # Significant positive correlation (i.e., more abundant gOTUs occur in more DNA samples)
-cor.test(colSums(dnamat.pa), log10(colSums(stem.23$abund[[20]])))
+cor.test(colSums(dnamat.pa), log10(lfdp23$total_abund))
 
 # Total abundance of stems per gOTU (as count in 100 m radius around 39 points) vs.
-plot(colSums(stem.23$abund[[20]]), 1*(colSums(dnamat.pa)>0), log='x')
+plot(lfdp23$total_abund, 1*(colSums(dnamat.pa)>0), log='x')
 
 # Significant logistic regression (i.e., more abundant gOTUs are more likely to have been detected overall in DNA)
-a <- log10(colSums(stem.23$abund[[20]]))
+a <- log10(lfdp23$total_abund)
 m1 <- glm(1*(colSums(dnamat.pa)>0) ~ a, family="binomial")
 summary(m1)
 
 # Rank total abundance in stem data (based on 100 m radii) vs DNA read rank abundance
-plot(rank(colSums(stem.23$abund[[20]])), rank(colSums(dnamat.pa)))
+plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 
 # Rank stem abundance is significantly positively correlated with rank DNA read abundance
-cor.test(rank(colSums(stem.23$abund[[20]])), rank(colSums(dnamat.pa)))
-
+cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 
 ### Species accumulation in spatial aggregations of DNA samples
-dxy <- dist(sampxy, 'euclidean')
+# dxy <- dist(sampxy, 'euclidean')
+# dxy <- st_as_sf(sampxy, coords = c("X", "Y"), remove=FALSE)
 
-dxy <- st_as_sf(sampxy, coords = c("X", "Y"), remove=FALSE)
-
-# find distance-based neigbours, upper distance bound is set ti 0.2km,
-out <- list()
-rads <- seq(50,600,25)
-for(r in seq_along(rads)){
-  
-  dxynn <- dnearneigh(dxy, 0, rads[r])
-  
-  grps <- unique(lapply(include.self(dxynn), sort))
-  
-  tmp <- vector()
-  for(g in seq_along(grps)){
-    if(length(grps[[g]])>1){
-      tmp[g] <- sum(colSums(dnamat.pa[grps[[g]],])>0)
-    } else {
-      tmp[g] <- sum(dnamat.pa[grps[[g]],]>0)
-    }
-  }
-  out[[r]] <- tmp
-}
+# Find neighbors in different distance radii
+# out <- list()
+# rads <- seq(50,600,25)
+# for(r in seq_along(rads)){
+#   dxynn <- dnearneigh(dxy, 0, rads[r])
+#   grps <- unique(lapply(include.self(dxynn), sort))
+#   tmp <- vector()
+#   for(g in seq_along(grps)){
+#     if(length(grps[[g]])>1){
+#       tmp[g] <- sum(colSums(dnamat.pa[grps[[g]],])>0)
+#     } else {
+#       tmp[g] <- sum(dnamat.pa[grps[[g]],]>0)
+#     }
+#   }
+#   out[[r]] <- tmp
+# }
 
 
-
-
+##################
 ### Figure 1 - there are a variety of plots below; need to decide which to include
 
 pdf("Figures/Fig1.rank-abundance-plot.pdf")
 
 par(mfrow=c(2,2), mar=c(4,4,1,1))
 
-plot(rank(colSums(stem.23$abund[[20]])), rank(colSums(dnamat.pa)), 
+# REPLACE THIS WHEN WE GET THE FULL PLOT SPECIES COUNTS
+plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
      ylab="Rank abundance of DNA reads",
      xlab="Rank abundance of stems", 
      pch=21, bg='grey')
-# abline(lm(rank(colSums(dnamat.pa)) ~ rank(colSums(stem.23$abund[[20]]))),
-#        col='blue', lwd=2)
 
-plot(colSums(stem.23$ba[[20]]),
+plot(lfdp23$total_ba * 100,
      colSums(dnamat.pa), log='x',
      ylab="Sites detected in DNA",
      xlab="Total basal area (m^2) [log10]",
      pch=21, bg='grey')
-abline(h=no_gotu_stem, lty=2)
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
@@ -150,15 +161,16 @@ b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
              ylab="Taxon richness", 
              xlim=c(-0.5,20), ylim=c(0,80))
 boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
+axis(1, at=-0.5, labels="DNA")
 abline(v=0.25)
 abline(h=no_gotu_stem, lty=2)
-axis(1, at=-0.5, labels="DNA")
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
 plot(specaccum(dnamat.pa),
      xlab="Number of samples",
      ylab="Taxon richness",
      ylim=c(0,80))
+abline(h=no_gotu_stem, lty=2)
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
 # df <- data.frame(sapply(out, "length<-", max(lengths(out))))
@@ -180,15 +192,23 @@ dev.off()
 ########################################################
 ########################################################
 
-# ....TBD Waiting on data summary back from Lora about the total abundance and basal area of species in these two categories
+### NOT TOTALLY SURE WHAT TO DO WITH THIS PART.... LET'S REVISIT AFTER CESC'S THESIS
 
+# Identify LU history for each sample site
 low <- rownames(sampxy)[sampxy$CoverClass < 4]
 high <- rownames(sampxy)[sampxy$CoverClass == 4]
 
-# Species richness in different land-use categories
+# DNA species richness in different land-use categories
 sum(1 * (colSums(dnamat[sampxy$CoverClass < 4,])>0))
 sum(1 * (colSums(dnamat[sampxy$CoverClass == 4,])>0))
 
+# Stem species richness in different land-use categories
+sum(lfdp23$low_LU_abund>0)
+sum(lfdp23$high_LU_abund>0)
+
+
+rbind(table(rownames(lfdp23), lfdp23$low_LU_abund>0)[,2],
+      table(rownames(lfdp23), lfdp23$high_LU_abund>0)[,2])
 
 
 
@@ -252,7 +272,7 @@ dev.off()
 
 
 ########################################################
-### 2. Procrusties test of stem ordination and dna ordinatino
+### 2. Procrusties test of stem ordination and dna ordination
 ########################################################
 
 # Similar to Mantel test, lots to consider in terms of transformation, dist metric, ordination...

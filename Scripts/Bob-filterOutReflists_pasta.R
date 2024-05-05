@@ -43,7 +43,7 @@ abline(0,1, col="red")
 ## Now to link the OTU names to the POTU table that cesc has, just access the object:
 
 ## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
-otu.potu.link <- readRDS("OTU-to-RefIDs-List.rds")
+otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
 colnames(otu_table(R1ref.lib.list[[5]]))
 otu.potu.link[[5]]$OTU
