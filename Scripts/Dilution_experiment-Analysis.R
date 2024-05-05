@@ -20,7 +20,7 @@ library(ggplotify)
 library(vegan)
 library(iNEXT)
 ## Loading all data
-tab <- readRDS("Raw_data/dilu_exp.rds")
+tab <- readRDS("Processed_data/dilu_exp.rds")
 #########################################
 ## pulling out the DILUTION EXPERIMENT
 ## tab <- R1phylo.plants.tax[[5]] - note tab is THIS - R1phylo.plants.tax[[5]]
