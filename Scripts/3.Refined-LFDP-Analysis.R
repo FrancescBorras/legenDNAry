@@ -24,7 +24,7 @@ sampxy <- read.csv("Raw_data/LFDP-sample39-coordinates.csv", row.names = 1)
 
 ### Species code full plot summaries
 lfdp <- readRDS("Raw_data/LFDP2023-extract-v2-20240427.RDA")
-df <- readRDS("LFDP2016-extract-v2-20240427.RDA")
+df <- readRDS("Raw_data/LFDP2016-extract-v2-20240427.RDA")
 
 ### gOTU full lpot summaries
 lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
@@ -116,17 +116,19 @@ pdf("Figures/Fig1.rank-abundance-plot.pdf")
 
 par(mfrow=c(2,2), mar=c(4,4,1,1))
 
-# REPLACE THIS WHEN WE GET THE FULL PLOT SPECIES COUNTS
+# Full plot abundance
 plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
      ylab="Rank abundance of DNA reads",
      xlab="Rank abundance of stems", 
      pch=21, bg='grey')
+mtext("A", adj=0.05, line=-1.5)
 
 plot(lfdp23$total_ba * 100,
      colSums(dnamat.pa), log='x',
      ylab="Sites detected in DNA",
      xlab="Total basal area (m^2) [log10]",
      pch=21, bg='grey')
+mtext("B", adj=0.05, line=-1.5)
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
@@ -159,18 +161,20 @@ plot(lfdp23$total_ba * 100,
 b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
              xlab="Radius (m)", 
              ylab="Taxon richness", 
-             xlim=c(-0.5,20), ylim=c(0,80))
+             xlim=c(-0.5,20), ylim=c(0,79))
 boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
 axis(1, at=-0.5, labels="DNA")
 abline(v=0.25)
 abline(h=no_gotu_stem, lty=2)
+mtext("C", adj=0.1, line=-2)
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
 plot(specaccum(dnamat.pa),
      xlab="Number of samples",
      ylab="Taxon richness",
-     ylim=c(0,80))
+     ylim=c(0,79))
 abline(h=no_gotu_stem, lty=2)
+mtext("D", adj=0.05, line=-2)
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
 # df <- data.frame(sapply(out, "length<-", max(lengths(out))))
