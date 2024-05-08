@@ -16,6 +16,7 @@ library(ggExtra)
 library(ggplotify)
 library(vegan)
 library(iNEXT)
+library(dplyr)
 ## Loading all data
 tab <- readRDS("Processed_data/dilu_exp.rds")
 ## tab <- R1phylo.plants.tax[[5]] - note tab is THIS - R1phylo.plants.tax[[5]]
