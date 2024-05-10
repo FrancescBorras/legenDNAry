@@ -122,13 +122,17 @@ plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)),
      xlab="Rank abundance of stems", 
      pch=21, bg='grey')
 mtext("A", adj=0.05, line=-1.5)
+cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
+
 
 plot(lfdp23$total_ba * 100,
-     colSums(dnamat.pa), log='x',
-     ylab="Sites detected in DNA",
+     (colSums(dnamat.pa)/39), log='x',
+     ylab="Prop. of sites detected in DNA",
      xlab="Total basal area (m^2) [log10]",
-     pch=21, bg='grey')
+     pch=21, bg='grey', ylim=c(0,1))
 mtext("B", adj=0.05, line=-1.5)
+
+cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa))
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
@@ -241,6 +245,14 @@ for(r in seq_along(stem.23$abund)){
                                  rarefy(dnamat, min(rowSums(dnamat))))
 }
 
+
+
+corrs <- list()
+for(r in seq_along(stem.23$abund)){
+  corrs[[r]] <- cor.test(rowSums(dnamat>0), 
+                         renyi(stem.23$abund[[r]][1:39,], hill = T, scales=2))
+}
+
 ### Figure 2
 pdf("Figures/Fig2.Richness-correlations.pdf", width = 9, height = 4)
 
@@ -248,14 +260,14 @@ par(mfrow=c(1,2))
 
 plot(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate), 
      ylim=c(-1,1), axes=F,
-     pch=21, bg='grey', xlab="Radius (m)",
+     pch=21, bg=cp, xlab="Radius (m)",
      ylab="Pearson correlation",
      main="Stem vs. DNA richness (raw)")
 segments(seq_along(stem.23$abund), y0=sapply(corrs, function(x) x$conf.int[1]),
          y1=sapply(corrs, function(x) x$conf.int[2]))
 abline(h=0, lty=2)
 points(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate), 
-       pch=21, bg='grey')
+       pch=21, bg=cp)
 axis(1, labels=seq(5, 100, 5), at=1:20)
 axis(2)
 
@@ -268,7 +280,7 @@ segments(seq_along(stem.23$abund), y0=sapply(corrs_rare, function(x) x$conf.int[
          y1=sapply(corrs_rare, function(x) x$conf.int[2]))
 abline(h=0, lty=2)
 points(seq_along(stem.23$abund), sapply(corrs_rare, function(x) x$estimate), 
-       pch=21, bg='grey')
+       pch=21, bg=cp)
 axis(1, labels=seq(5, 100, 5), at=1:20)
 axis(2)
 
