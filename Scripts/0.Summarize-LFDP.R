@@ -7,7 +7,7 @@ head(census)
 census$Mnemonic <- as.factor(census$Mnemonic)
 
 # 1. READ SAMPLE POINT LOCATIONS
-sample_xy <- read.csv("/Users/au529793/Projects/GIT/eDNA-LFDP/Data/LFDP-eDNA-xy.csv")
+sample_xy <- read.csv("Raw_data/LFDP-eDNA-xy-V2.csv")
 
 # 2. COMPUTE BASAL AREA OF EACH STEM
 census$BA <- pi * (census$DBH/2000)^2
@@ -62,7 +62,7 @@ results <- list(abund=abund,
                 ba=ba,
                 nearest_sp=nntrees)
 
-saveRDS(results, "Raw_data/LFDP2016-extract-20240423.RDA")
+saveRDS(results, "Raw_data/LFDP2016-extract-20240510.RDA")
 
 # 6. PLEASE SEND THE OUTPUT FILE "full-results-test.RDA" to robert.muscarella@ebc.uu.se
 

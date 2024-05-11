@@ -3,13 +3,13 @@
 ## even ones that had no classification from Genbank that were thrown out immediately
 ## The last column of each data frame in the list is $idsource - here you can see where the OTU was identified from
 
-View(all.taxs.source.otu)
-View(all.taxs.source.otu$dada.nopool.nochim)
+# View(all.taxs.source.otu)
+# View(all.taxs.source.otu$dada.nopool.nochim)
 ## You can use the OTU code to index and join the data frames.. 
 
 Ref.lib.ids <- lapply(all.taxs.source.otu, function(x) subset(x, idsource == "RefLib"))
-rownames(Ref.lib.ids[[5]])
-View(Ref.lib.ids$dada.pspool.nc.lulu)
+# rownames(Ref.lib.ids[[5]])
+# View(Ref.lib.ids$dada.pspool.nc.lulu)
 
 ## To filter your phyloseq objects 
 reflib.otus <- lapply(Ref.lib.ids, function(x) rownames(x))

@@ -17,8 +17,8 @@ d <- R1ref.lib.list[[6]]
 d <- prune_taxa(otu.potu.link[[6]]$OTU, d)
 
 ### Load the LFDP 2023 census extract data
-tree <- readRDS("Raw_data/LFDP2023-extract-20240327.RDA")
-tree16 <- readRDS("Raw_data/LFDP2016-extract-20240423.RDA")
+tree <- readRDS("Raw_data/LFDP2023-extract-20240510.RDA")
+tree16 <- readRDS("Raw_data/LFDP2016-extract-20240510.RDA")
 
 # list of species codes observed in tree data
 # writexl::write_xlsx(data.frame(code=colnames(tree$abund$`100`)), "Raw_data/LFDP2023-codes.xlsx")
@@ -47,7 +47,7 @@ codes <- readxl::read_xlsx("Raw_data/LFDP-SPcodes.xlsx")
 codes <- codes[codes$LFDP2023==1,]
 
 ### Load the sample point coordinates
-sample_xy <- read.csv("Raw_data/LFDP-eDNA-xy.csv")
+sample_xy <- read.csv("Raw_data/LFDP-eDNA-xy-V2.csv")
 
 ### Sample "C24_P2" (a "normal" sampling location) is not missing from soil data.
 ### Glen confirmed that this was dropped due to 'bad' eDNA data
@@ -57,6 +57,9 @@ d <- prune_samples(grepl("normal", d@sam_data$factorlevel), d)
 
 # Get coordinates from 39 sample points included
 xy <- d@sam_data[grepl("normal", d@sam_data$factorlevel),c("X","Y")]
+
+# Correct coordinates (off by 20 m in both directions...)
+xy <- xy-20
 
 # write.csv(xy, file="Raw_data/LFDP-sample39-coordinates.csv")
 
@@ -73,19 +76,20 @@ stem_abund <- lapply(tree$abund, function(x) {
   rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
         x[88:1087,])})
 for(i in seq_along(stem_abund)){
-  rownames(stem_abund[[i]]) <- c(rownames(d@otu_table), paste0('random',1:1000))
+  rownames(stem_abund[[i]]) <- c(rownames(d@otu_table), paste0('random', 1:1000))
 }
 
 stem_ba <- lapply(tree$ba, function(x) {
   rbind(x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),],
         x[88:1087,])})
 for(i in seq_along(stem_ba)){
-  rownames(stem_ba[[i]]) <- c(rownames(d@otu_table), paste0('random',1:1000))
+  rownames(stem_ba[[i]]) <- c(rownames(d@otu_table), paste0('random', 1:1000))
 }
 
 stem_nn <- rbind(tree$nearest_sp[match(paste(xy$X, xy$Y),
-                                        paste(sample_xy$PX, sample_xy$PY)),], tree$nearest_sp[88:1087,])
-rownames(stem_nn) <- c(rownames(d@otu_table), paste0('random',1:1000))
+                                        paste(sample_xy$PX, sample_xy$PY)),], 
+                 tree$nearest_sp[88:1087,])
+rownames(stem_nn) <- c(rownames(d@otu_table), paste0('random', 1:1000))
 
 stem <- list(abund=stem_abund, ba=stem_ba, nearest_sp=stem_nn)
 
@@ -272,7 +276,7 @@ traits <- as.data.frame(traits)
 #################################
 
 saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), 
-        "Processed_data/stem-soil-39pt-data-20240426.RDA")
+        "Processed_data/stem-soil-39pt-data-20240510.RDA")
 
 
 

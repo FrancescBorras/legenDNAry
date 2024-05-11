@@ -16,19 +16,19 @@ library(sf)
 library(spdep)
 
 ### Load data
-dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[1]]
-stem.23 <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[2]]
-stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[4]]
-traits <- readRDS("Processed_data/stem-soil-39pt-data-20240426.RDA")[[3]]
+dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[1]]
+stem.23 <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[2]]
+stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[4]]
+traits <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[3]]
 sampxy <- read.csv("Raw_data/LFDP-sample39-coordinates.csv", row.names = 1)
 
 ### Species code full plot summaries
 lfdp <- readRDS("Raw_data/LFDP2023-extract-v2-20240427.RDA")
 df <- readRDS("Raw_data/LFDP2016-extract-v2-20240427.RDA")
 
-### gOTU full lpot summaries
+### gOTU full pot summaries
 lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
-lfdp16 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
+lfdp16 <- readRDS("Raw_data/LFDP2016-extract-v2-20240427-gOTUs.RDA")
 
 ### Make presence absence matrices
 dnamat.pa <- 1*(dnamat>0)
@@ -36,7 +36,7 @@ stem.pa.list <- lapply(stem.23$abund, function(x) 1*(x>0))
 stem.pa.list16 <- lapply(stem.16$abund, function(x) 1*(x>0))
 
 ### Color palette for plotting
-cp <- rev(viridis(20))
+cp <- rev(viridis::viridis(20))
 
 
 ### TRY DELETING THE EDGE SAMPLES
@@ -246,12 +246,11 @@ for(r in seq_along(stem.23$abund)){
 }
 
 
-
-corrs <- list()
-for(r in seq_along(stem.23$abund)){
-  corrs[[r]] <- cor.test(rowSums(dnamat>0), 
-                         renyi(stem.23$abund[[r]][1:39,], hill = T, scales=2))
-}
+# corrs <- list()
+# for(r in seq_along(stem.23$abund)){
+#   corrs[[r]] <- cor.test(rowSums(dnamat>0), 
+#                          renyi(stem.23$abund[[r]][1:39,], hill = T, scales=2))
+# }
 
 ### Figure 2
 pdf("Figures/Fig2.Richness-correlations.pdf", width = 9, height = 4)
@@ -297,7 +296,7 @@ prores <- list()
 for(r in 1:20){
   dnaord <- metaMDS(dnamat.pa, distance="jaccard")
   stemord <- metaMDS(1*(stem.23$abund[[r]][1:39,]>0), distance="jaccard")
-  prores[[r]] <- protest(dnamat.pa, stemord, symmetric=T)
+  prores[[r]] <- protest(dnaord, stemord, symmetric=T)
 }
 
 # A smaller Procrustes SS indicates a better fit or alignment between the two sets of points. It essentially tells you how well one set of points can be adjusted to match another set, considering only rotation, scaling, and translation as transformation operations.
@@ -305,11 +304,15 @@ for(r in 1:20){
 # A 'significant' p value (<0.05) indicates that the two matrices are similar
 
 vals <- sapply(prores, function(x) summary(permustats(x))$z)
+
+# vals <- sapply(prores, function(x) x$t0)
+
 sig <- sapply(prores, function(x) x$signif)
 
 ### Figure 3
 pdf("Figures/Fig3.Procrustes_correlations.pdf", width = 8, height = 8)
 
+par(mfrow=c(1,1))
 par(mar=c(4,4,1,1))
 plot(vals, 
      pch=21, bg=cp, cex=2, axes=F,
