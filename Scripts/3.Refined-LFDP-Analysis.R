@@ -65,7 +65,18 @@ cp <- rev(viridis::viridis(20))
 (no_gotu_stem <- sum(lfdp23$total_abund>0))
 
 ### Percent of gOTUs from stem data that are detected in DNA data
-(100 * (no_gotu_dna/no_gotu_stem))
+round(100 * (no_gotu_dna/no_gotu_stem), 1)
+
+### Mean and SD of taxon richness in eDNA data
+(mean(rowSums(dnamat.pa)))
+(sd(rowSums(dnamat.pa)))
+(range(rowSums(dnamat.pa)))
+
+### Mean and SD of taxon richness in stem data
+(mean(rowSums(stem.23$abund[[1]]>0)))
+(sd(rowSums(dnamat.pa)))
+(range(rowSums(dnamat.pa)))
+
 
 # Total abundance of stems per gOTU (as log count in 100 m radius around 39 points) vs.number of sites where gOTU was detected in the DNA
 plot(lfdp23$total_abund, colSums(dnamat.pa), log='x')
@@ -108,6 +119,12 @@ cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 #   out[[r]] <- tmp
 # }
 
+
+dnaaccum <- specaccum(dnamat.pa)
+
+plot(dnaaccum)
+fitspecaccum(dnaaccum, model="michaelis-menten")
+fitsp <- fitspecaccum(dnaaccum, model="arrhenius")
 
 ##################
 ### Figure 1 - there are a variety of plots below; need to decide which to include
@@ -166,7 +183,7 @@ b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
              xlab="Radius (m)", 
              ylab="Taxon richness", 
              xlim=c(-0.5,20), ylim=c(0,79))
-boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
+b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
 axis(1, at=-0.5, labels="DNA")
 abline(v=0.25)
 abline(h=no_gotu_stem, lty=2)
@@ -303,6 +320,8 @@ for(r in 1:20){
 # The correlation (x$t0) tells you the goodness-of-fit between the two configurations of multivariate data.
 # A 'significant' p value (<0.05) indicates that the two matrices are similar
 
+corrvals <- sapply(prores, function(x) x$t0)
+
 vals <- sapply(prores, function(x) summary(permustats(x))$z)
 
 # vals <- sapply(prores, function(x) x$t0)
@@ -326,6 +345,27 @@ graphics::box()
 
 dev.off()
 
+
+
+### COMPARE WITH RANDOM POINTS
+prores_rand <- list()
+for(r in 1:20){
+  dnaord <- metaMDS(dnamat.pa, distance="jaccard")
+  stemord <- metaMDS(1*(stem.23$abund[[r]][151:189,]>0), distance="jaccard")
+  prores_rand[[r]] <- protest(dnaord, stemord, symmetric=T)
+}
+
+vals <- sapply(prores_rand, function(x) summary(permustats(x))$z)
+par(mar=c(4,4,1,1))
+plot(vals, 
+     pch=21, bg=cp, cex=2, axes=F,
+     xlab="Radius (m)",
+     ylab="Procrustes Correlation SES")
+polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+points(vals, pch=21, bg=cp, cex=2)
+axis(1, labels=seq(5, 100, 5), at=1:20)
+axis(2)
+graphics::box()
 
 
 ########################################################
@@ -487,6 +527,36 @@ boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`),
 graphics::box()
 
 dev.off()
+
+
+plot(sapply(conf_stats_ses_list, function(x) median(x$`Balanced Accuracy`)))
+
+
+### Explore the plots where SES Balanced Accuracy is higher than expected
+
+stem.23$abund[[1]][which(conf_stats_ses_list[[1]]$`Balanced Accuracy`>1.96),]
+
+
+
+plot(jitter(rowSums(stem.23$abund[[1]]>0)[1:39]),
+     conf_stats_ses_list[[1]]$`Balanced Accuracy`,
+     pch=21, bg=ifelse(conf_stats_ses_list[[1]]$`Balanced Accuracy`>1.96, 'red', 1),
+     xlab='Taxon richness',
+     ylab="SES Balanced accuracy")
+abline(h=1.96)
+
+t.test(conf_stats_ses_list[[1]]$`Balanced Accuracy`,
+       rep(1.96, times=length(conf_stats_ses_list[[1]]$`Balanced Accuracy`)))
+
+
+
+
+
+
+
+
+
+
 
 
 
