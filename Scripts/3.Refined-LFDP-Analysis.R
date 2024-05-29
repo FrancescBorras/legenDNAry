@@ -122,9 +122,30 @@ cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 
 dnaaccum <- specaccum(dnamat.pa)
 
-plot(dnaaccum)
-fitspecaccum(dnaaccum, model="michaelis-menten")
-fitsp <- fitspecaccum(dnaaccum, model="arrhenius")
+fitsp1 <- fitspecaccum(dnaaccum, model="michaelis-menten")
+fitsp2 <- fitspecaccum(dnaaccum, model="gleason")
+fitsp3 <- fitspecaccum(dnaaccum, model="asymp")
+fitsp4 <- fitspecaccum(dnaaccum, model="gompertz")
+fitsp5 <- fitspecaccum(dnaaccum, model="weibull")
+fitsp6 <- fitspecaccum(dnaaccum, model="michaelis-menten")
+fitsp7 <- fitspecaccum(dnaaccum, model="gitay")
+
+plot(predict(fitsp1, newdata = 1:1000), type='l', ylim=c(0, 80))
+abline(h=78, lty=2)
+lines(predict(fitsp2, newdata = 1:1000), col=2)
+lines(predict(fitsp3, newdata = 1:1000), col=3)
+lines(predict(fitsp4, newdata = 1:1000), col=4)
+lines(predict(fitsp5, newdata = 1:1000), col=5)
+lines(predict(fitsp6, newdata = 1:1000), col=6)
+lines(predict(fitsp7, newdata = 1:1000), col=7)
+
+
+library(fossil)
+fossil::chao2(dnamat.pa, taxa.row = F)
+
+
+
+
 
 ##################
 ### Figure 1 - there are a variety of plots below; need to decide which to include
@@ -148,8 +169,8 @@ plot(lfdp23$total_ba * 100,
      xlab="Total basal area (m^2) [log10]",
      pch=21, bg='grey', ylim=c(0,1))
 mtext("B", adj=0.05, line=-1.5)
+cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/39)
 
-cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa))
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
@@ -165,18 +186,24 @@ cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa))
 # abline(lm(colSums(dnamat.pa) ~ colSums(stem.23$ba[[20]])),
 #        col='blue', lwd=2)
 
-# plot(colSums(stem.23$abund[[20]]),
+# plot(lfdp23$total_abund,
 #      jitter(1*(colSums(dnamat.pa)>0), 0.1), log='x',
+#      xlim=c(1,10000),
 #      ylab="Detected in DNA",
 #      xlab="Total number of stems",
 #      pch=21, bg='grey')
+# mtext("C", adj=0.05, line=-1.5)
+# 
+# # # Add logistic prediction
+# # nd <- data.frame(a=seq(log10(min(lfdp23$total_abund)),
+# #                        log10(max(lfdp23$total_abund)),
+# #                        length.out=1000))
+# # ypred <- predict(m1, newdata=nd, type="response")
+# # lines(10^(nd$a), ypred, col='blue', lwd=2)
+# 
+# lfdp23$eDNA <- 1*(colSums(dnamat.pa)>0)
+# lfdp23[order(lfdp23$eDNA, lfdp23$total_abund),]
 
-# Add logistic prediction
-# nd <- data.frame(a=seq(min(log10(colSums(stem.23$abund[[20]]))),
-#                        max(log10(colSums(stem.23$abund[[20]]))),
-#                        length.out=1000))
-# ypred <- predict(m1, newdata=nd, type="response")
-# lines(10^(nd$a), ypred, col='blue', lwd=2)
 
 # TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
 b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
@@ -312,6 +339,11 @@ dev.off()
 prores <- list()
 for(r in 1:20){
   dnaord <- metaMDS(dnamat.pa, distance="jaccard")
+  
+  
+  
+  dnaord <- prcomp(dnamat)
+  
   stemord <- metaMDS(1*(stem.23$abund[[r]][1:39,]>0), distance="jaccard")
   prores[[r]] <- protest(dnaord, stemord, symmetric=T)
 }
@@ -320,27 +352,32 @@ for(r in 1:20){
 # The correlation (x$t0) tells you the goodness-of-fit between the two configurations of multivariate data.
 # A 'significant' p value (<0.05) indicates that the two matrices are similar
 
-corrvals <- sapply(prores, function(x) x$t0)
+# corrvals <- sapply(prores, function(x) x$t0)
 
-vals <- sapply(prores, function(x) summary(permustats(x))$z)
+# vals <- sapply(prores, function(x) summary(permustats(x))$z)
 
-# vals <- sapply(prores, function(x) x$t0)
+vals <- sapply(prores, function(x) x$t0)
 
-sig <- sapply(prores, function(x) x$signif)
+quants <- sapply(prores, function(x) {
+  quantile(x$t0 - x$t, probs=c(0.025, 0.975)) + median(x$t)}
+  )
+
+# sig <- sapply(prores, function(x) x$signif)
 
 ### Figure 3
 pdf("Figures/Fig3.Procrustes_correlations.pdf", width = 8, height = 8)
 
 par(mfrow=c(1,1))
-par(mar=c(4,4,1,1))
 plot(vals, 
      pch=21, bg=cp, cex=2, axes=F,
      xlab="Radius (m)",
-     ylab="Procrustes Correlation SES")
-polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+     ylab="Procrustes Correlation", ylim=c(-0.1, 0.7))
+segments(1:20, quants[1,], 1:20, quants[2,], lwd=2)
+# polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 points(vals, pch=21, bg=cp, cex=2)
 axis(1, labels=seq(5, 100, 5), at=1:20)
 axis(2)
+abline(h=0, lty=2)
 graphics::box()
 
 dev.off()
@@ -466,8 +503,7 @@ TukeyHSD(m2_ses)
 
 pdf("Figures/Fig4.Confusion-matrix-stats.pdf", width = 8, height = 10)
 
-par(mfrow=c(3,2), mar=c(4,4,1,1))
-
+par(mfrow=c(3,2), mar=c(4,4,1,1), oma=c(1,1,1,1))
 
 # Sensitivity (true positive rate)
 boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), 
@@ -476,6 +512,7 @@ boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity),
 axis(1, labels=names(stem.23$abund), at=1:20)
 axis(2)
 graphics::box()
+mtext("A", adj=0, line=0.5)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         ylab="Sensitivity (SES)", 
@@ -487,7 +524,7 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         axes=F, col=cp, add=T)
 graphics::box()
-
+mtext("B", adj=0, line=0.5)
 
 # Specificity (true negative rate)
 boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
@@ -496,6 +533,7 @@ boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity),
 axis(1, labels=names(stem.23$abund), at=1:20)
 axis(2)
 graphics::box()
+mtext("C", adj=0, line=0.5)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         ylab="Specificity (SES)", 
@@ -506,6 +544,7 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         axes=F, col=cp, add=T)
 graphics::box()
+mtext("D", adj=0, line=0.5)
 
 # Balanced Accuracy
 boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`), 
@@ -514,6 +553,7 @@ boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`),
 axis(1, labels=names(stem.23$abund), at=1:20)
 axis(2)
 graphics::box()
+mtext("E", adj=0, line=0.5)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
         ylab="Balanced Accuracy (SES)", 
@@ -525,6 +565,7 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
         axes=F, col=cp, add=T)
 graphics::box()
+mtext("F", adj=0, line=0.5)
 
 dev.off()
 
