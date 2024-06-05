@@ -836,6 +836,10 @@ legend("top", legend=c("2023", "2016"), pch=16, col=1:2, bty='n')
 x <- unlist(log10(stem.23$nn[1:39,]))
 y <- as.vector(dnamat.pa)
 
+x <- unlist(log10(stem.23$nn[1:39,]))
+y <- as.vector(dnamat.pa)
+
+
 plot(x, jitter(y, 0.1), pch=16, col=rgb(0,0,0,0.2), 
      ylab="Presence in DNA",
      xlab="Distance to nearest individual (log10 m)")
@@ -848,7 +852,7 @@ lines(nd$x, ypred, col="blue", lwd=3)
 
 # gOTU-specific fits
 coeffs <- vector()
-for(sp in 1:39){
+for(sp in 1:ncol(stem.23$nn)){
   xx <- log(unlist(stem.23$nn[1:39,sp]))
   yy <- unlist(as.data.frame(1*(dnamat[,sp]>1)))
   mod <- glm(yy ~ xx, family=binomial)
