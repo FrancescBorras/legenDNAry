@@ -81,6 +81,37 @@ dev.off()
 
 
 
+###
+# 
+# pts <- st_as_sf(census[census$Status=="alive", c("PX", "PY","DBH", "Mnemonic")],
+#                 coords = c(1,2))
+# b <- st_as_sfc(st_bbox(pts))
+# 
+# set.seed(191)
+# cols <- sample(colors(distinct=T), length(unique(pts$Mnemonic)))
+# 
+# plot(pts$geometry,
+#      cex=scales::rescale(log(pts$DBH), to=c(0.01,0.8)),
+#      lwd=scales::rescale(log(pts$DBH), to=c(0.25,0.75)),
+#      col=cols[as.factor(pts$Mnemonic)])
+# plot(b, add=T)
+# axis(1, at=seq(0,300,100))
+# axis(2, at=seq(0,500,100))
+# points(sampxy[,1:2], pch=3, cex=1, lwd=3)
+# 
+# 
+# s <- st_as_sf(data.frame(x=150, y=150),
+#               coords = c(1,2))
+# 
+# for(r in seq_along(seq(5,100,5))){
+#   plot(sf::st_buffer(s, seq(5,100,5)[r]), add=T, 
+#        border=rev(viridis(20))[r], lwd=2)
+# }
+# 
+# points(150, 150, pch=4, col='red', cex=3, lwd=8)
+
+
+
 
 
 
