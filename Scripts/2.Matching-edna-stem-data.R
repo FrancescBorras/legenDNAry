@@ -14,7 +14,7 @@ otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-Lis
 d <- R1ref.lib.list[[6]]
 
 ### Prune phyloseq object to the OTUs that appear in the soil data AND correspond to the reference library
-d <- prune_taxa(otu.potu.link[[6]]$OTU, d)
+d1 <- prune_taxa(otu.potu.link[[6]]$OTU, d)
 
 ### Load the LFDP 2023 census extract data
 tree <- readRDS("Raw_data/LFDP2023-extract-20240510.RDA")
@@ -50,7 +50,7 @@ codes <- codes[codes$LFDP2023==1,]
 sample_xy <- read.csv("Raw_data/LFDP-eDNA-xy-V2.csv")
 
 ### Sample "C24_P2" (a "normal" sampling location) is not missing from soil data.
-### Glen confirmed that this was dropped due to 'bad' eDNA data
+### Glen confirmed that this was dropped due to 'bad' eDNA data (small library size of <10000 sequences)
 
 ### Prune phyloseq object to the 39 sample points in the '40 point analysis'
 d <- prune_samples(grepl("normal", d@sam_data$factorlevel), d)

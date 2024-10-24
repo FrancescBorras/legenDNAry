@@ -10,6 +10,15 @@
 Ref.lib.ids <- lapply(all.taxs.source.otu, function(x) subset(x, idsource == "RefLib"))
 # rownames(Ref.lib.ids[[5]])
 # View(Ref.lib.ids$dada.pspool.nc.lulu)
+## Note that OTU34 needs removal - it was from an unidentified "vine" (i.e. paraphyletic)
+## and thus has identification use at all
+Ref.lib.ids <- lapply(Ref.lib.ids, function(x) x[!(row.names(x) %in% "OTU34"), ])
+
+# View(Ref.lib.ids)
+# View(Ref.lib.ids$dada.pspool.nc.lulu)
+
+## To filter your phyloseq objects 
+reflib.otus <- lapply(Ref.lib.ids, function(x) rownames(x))
 
 ## To filter your phyloseq objects 
 reflib.otus <- lapply(Ref.lib.ids, function(x) rownames(x))
@@ -31,11 +40,17 @@ names(R1ref.lib.list) <- c("R1.dada.nopool.reflib", "R1.dada.pool.reflib" , "R1.
                            "R1.lulu.nopool.reflib", "R1.lulu.pool.reflib", "R1.lulu.pspool.reflib" )
 
 ## Getting how many sequences are cut out when only including OTUs
-precutsums <- rowSums(otu_table( R1phylo.plants.tax[[6]]))
+precutsums <- rowSums(otu_table(R1phylo.plants.tax[[6]]))
 postcutsums <- rowSums(otu_table(cutlist6))
 
 plot(precutsums, postcutsums, xlab ="All Plants OTUs - library size", ylab ="Only Ref. Lib. OTUs - library size ")
 abline(0,1, col="red")
+
+beforeseqs <- lapply(R1phylo.plants.tax, function(x) sum(otu_table(x)))
+afterseqs <- lapply(R1ref.lib.list, function(x) sum(otu_table(x)))
+unlist(afterseqs)/unlist(beforeseqs)
+
+
 
 ## I am not sure that it is relevant to have an "other" column with everything else collapsed other than to say that x% of reads from plants matched to the reference
 ## library and for this all you need to do is compare the vectors from rowSums for the pre-reflib filtered otu_table() and the post-reflib filtered otu_table()
@@ -43,7 +58,7 @@ abline(0,1, col="red")
 ## Now to link the OTU names to the POTU table that cesc has, just access the object:
 
 ## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
+otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
 colnames(otu_table(R1ref.lib.list[[5]]))
 otu.potu.link[[5]]$OTU
