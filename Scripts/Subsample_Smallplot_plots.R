@@ -282,24 +282,23 @@ gg1 <- ggplot(data=seqrare, aes(x=Sample, y=Species)) +
   xlab("Read Count") + 
   ylab("OTU diversity")
 
-  coord_cartesian(ylim = c(0, 60), xlim = c(0, 50)) +
-  geom_line() 
-  theme(
-    legend.justification = c(0, 1), 
-    legend.position = c(0, 1), 
-    legend.key = element_rect(colour = NA, fill = NA),
-    legend.title = element_blank(),
-    legend.background = element_rect(fill = 'transparent'),
-    legend.box.background = element_blank()
-  ) +
-  xlab("Number of samples") + 
-  ylab("OTU diversity") +
-  geom_point(aes(x = 3, y = 0), colour = "black", shape = 1, show.legend = FALSE) +
-  geom_point(aes(x = 12, y = 0), colour = "black", shape = 16, show.legend = FALSE)
-gg2 <- ggplot(data=d, aes(x=x, y=y, ymin=LCL, ymax=UCL, fill=data)) + 
-  coord_cartesian(ylim = c(0, 60), xlim = c(0, 50)) +
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+df %>% group_by(race) %>% 
+  mutate(pred = predict(loess(value~year), newdata=data.frame(year))) %>% 
+  ggplot(aes(x=year, y=pred,color=race, lty=year>2020)) + 
+  geom_line(size=1.4) + 
+  ylim(c(50,100)) + 
+  guides(lty="none")
+
+gg2 <- ggplot(data=d, aes(x=x, y=y, ymin=LCL, ymax=UCL, fill=data, lty=x>12)) + 
+  coord_cartesian(ylim = c(0, 60), xlim = c(0, 55)) +
+  geom_line(aes(color=data)) + 
+  guides(lty="none")+
   geom_ribbon(alpha=0.5) +
-  geom_line(aes(color=data), linetype = "solid") + 
   theme(
     legend.justification = c(0, 1), 
     legend.position = c(0, 1), 
@@ -311,7 +310,11 @@ gg2 <- ggplot(data=d, aes(x=x, y=y, ymin=LCL, ymax=UCL, fill=data)) +
   xlab("Number of samples") + 
   ylab("OTU diversity") +
   geom_point(aes(x = 3, y = 0), colour = "black", shape = 1, show.legend = FALSE) +
-  geom_point(aes(x = 12, y = 0), colour = "black", shape = 16, show.legend = FALSE)
+  geom_point(aes(x = 12, y = 0), colour = "black", shape = 16, show.legend = FALSE) + 
+  geom_point(aes(x = 49, y = 42.60520), colour= "#F8766D", shape = 16, show.legend = FALSE, size = 3) +
+  geom_point(aes(x = 45, y = 36.566913), colour= "#7CAE00", shape = 16, show.legend = FALSE, size = 3) +
+  geom_point(aes(x = 54, y = 28.553082), colour= "#00BFC4", shape = 16, show.legend = FALSE, size = 3) +
+  geom_point(aes(x = 35, y = 25.756594), colour= "#C77CFF", shape = 16, show.legend = FALSE, size = 3)
 
 figure2 <- ggarrange(gg1, gg2, labels = c("A", "B"),
                      ncol = 2, nrow = 1)
