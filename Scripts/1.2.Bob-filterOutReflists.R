@@ -95,8 +95,8 @@ sp3+scale_color_gradientn(colours = rainbow(5))+ labs(colour = "Seq. Depth")
 ## Now to link the OTU names to the POTU table that cesc has, just access the object:
 
 ## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
-otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
+# otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
+otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
 ### Now to get some filtered variants for analyses representing lenient and stringent filtering
 ### Note that first sub-setting data so that only samples from the biggrid (no incubation experiments etc)
@@ -153,5 +153,16 @@ rare_repfilteredf1 <- rarfun(repfilteredf1)
 #3b rare_repfiltered: repfiltered (#3) but all libraries normalized by rarefying to an even depth = 55 OTUs
 #4 repfilteredf1 (lulu curated, dada psuedopooled option with rel. abund. threshold: before rarefying OTU must have  >1 read per 10000 sequences and be in at least 2/3 PCR replicates) = 55 OTUs
 #4b rare_repfilteredf1: repfilteredf1 (#4) but all libraries normalized by rarefying to an even depth = 55 OTUs
+
+
+
+lenient
+rare_lenient
+lenientf1
+rare_lenientf1
+repfiltered
+rare_repfiltered
+repfilteredf1
+rare_repfilteredf1
 
 

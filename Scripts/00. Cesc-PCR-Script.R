@@ -1495,9 +1495,9 @@ R2phylo.plants.tax <- lapply(R2phylo.plants.tax, function (x) subset_samples(x, 
 ###########################################################################################
 ### Note - here R environment saved as "CescPRdata.RData"--
 #save.image("CescPRdata_v2.RData")
-setwd("/Users/glennd/Documents/Cesc-PR-eDNA/Soil_eDNA_data")
-load("CescPRdata_v2.RData") # - remove first # to load environment.. 
-# If loading from here al libraries used above need reloading...
+# setwd("/Users/glennd/Documents/Cesc-PR-eDNA/Soil_eDNA_data")
+
+# If loading from here all libraries used above need reloading...
 library(dada2)
 library(textshape)
 library(tibble)
@@ -1507,16 +1507,18 @@ library(phyloseq)
 library(microViz)
 library(speedyseq)
 library(phylosmith)
-library(phyloseq)
 library(vegan)
 library(metagMisc)
 library(ggplot2)
 library(ggExtra)
 library(ggplotify)
 library(ggpubr)
-library(vegan)
 library(iNEXT)
-## Looking aat rarefaction curves to assess sequencing coverage after removing small libraries > 10000 sequences
+
+# Load data from above
+load("Raw_data/CescPRdata_v2.RData") # - remove first # to load environment.. 
+
+## Looking at rarefaction curves to assess sequencing coverage after removing small libraries > 10000 sequences
 
 tab <- R1phylo.plants.tax[[5]]
 ttab <- otu_table(tab)
