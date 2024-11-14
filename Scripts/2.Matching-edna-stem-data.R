@@ -2,17 +2,23 @@ library(phyloseq)
 library(googlesheets4)
 library(EDIutils)
 
-### Load data from Glenn
-load("Raw_data/CescPRdata_v1.RData")
+### Load data from Glenn (we can skip reading the raw data here and jump to the processed object)
+# load("Raw_data/CescPRdata_v2.RData")
+
+# List of 8 phyloseq objects (lenient, etc.)
+data <- readRDS("Processed_data/PR_eDNA-for-analysis_2024-10-29.RData")
 
 ### Load link between OTUs and RefIDs
 otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
-### ** GO TO SCRIPT 1.2Bob-filterOutReflists.R to get the next object **
+### Subset the version of eDNA data to use
+# d <- R1ref.lib.list[[6]]
+d <- data$lenient
 
-### (For now) subset the main eDNA data to use
-d <- R1ref.lib.list[[6]]
-
+for(data_selector in 1:8){
+d <- data[[data_selector]]
+  
+  
 ### Prune phyloseq object to the OTUs that appear in the soil data AND correspond to the reference library
 d1 <- prune_taxa(otu.potu.link[[6]]$OTU, d)
 
@@ -61,15 +67,10 @@ xy <- d@sam_data[grepl("normal", d@sam_data$factorlevel),c("X","Y")]
 # Correct coordinates (off by 20 m in both directions...)
 xy <- xy-20
 
+
 # write.csv(xy, file="Raw_data/LFDP-sample39-coordinates.csv")
 
 ### Make the rows of the stem data match the rows of the eDNA otu-table data
-## *THIS FIRST BLOCK WAS TO JUST TO EITHER ABUNDANCE ONLY, NEW BLOCKS BELOW DO ABUND, BA, AND NN
-# stem <- lapply(tree$abund, function(x) x[match(paste(xy$X, xy$Y), paste(sample_xy$PX, sample_xy$PY)),])
-# for(i in seq_along(stem)){
-#   rownames(stem[[i]]) <- rownames(d@otu_table)
-# }
-
 
 ### Create stem data for 2023
 stem_abund <- lapply(tree$abund, function(x) {
@@ -147,9 +148,9 @@ stem.otu <- list()
 for(r in seq_along(stem$abund)){
   
   # Initialize a matrix to hold collapsed results for a given radius
-  tmat_abund <- matrix(ncol=length(codes.collapse.list), nrow=1039)
-  tmat_ba <- matrix(ncol=length(codes.collapse.list), nrow=1039)
-  tmat_nn <- matrix(ncol=length(codes.collapse.list), nrow=1039)
+  tmat_abund <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
+  tmat_ba <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
+  tmat_nn <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
   
   # loop to collapse taxa in phyloseq objects
   for(i in seq_along(codes.collapse.list)){
@@ -191,9 +192,9 @@ stem.otu16 <- list()
 for(r in seq_along(stem16$abund)){
   
   # Initialize a matrix to hold collapsed results for a given radius
-  tmat_abund <- matrix(ncol=length(codes.collapse.list), nrow=1039)
-  tmat_ba <- matrix(ncol=length(codes.collapse.list), nrow=1039)
-  tmat_nn <- matrix(ncol=length(codes.collapse.list), nrow=1039)
+  tmat_abund <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
+  tmat_ba <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
+  tmat_nn <- matrix(ncol=length(codes.collapse.list), nrow=nrow(xy)+1000)
   
   # loop to collapse taxa in phyloseq objects
   for(i in seq_along(codes.collapse.list)){
@@ -275,9 +276,15 @@ traits <- as.data.frame(traits)
 ### SAVE DATA FOR DOWNSTREAM ANALYSES
 #################################
 
-saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), 
-        "Processed_data/stem-soil-39pt-data-20240510.RDA")
+# saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), 
+#         "Processed_data/stem-soil-39pt-data-20240510.RDA")
 
 
+outfile <- paste0("Processed_data/stem-soil-39pt-data-2024-10-29-",
+                  names(data)[data_selector], 
+                  ".RDA")
+
+saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), outfile)
+}
 
 

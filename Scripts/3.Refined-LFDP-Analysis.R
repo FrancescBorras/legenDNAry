@@ -15,18 +15,48 @@ library(ecodist)
 library(sf)
 library(spdep)
 
+### Make labels for saving plots
+label <- c("lenient",
+           "lenientf1",
+           "rare_lenient",
+           "rare_lenientf1",
+           "repfiltered",
+           "rare_repfiltered",
+           "repfilteredf1",
+           "rare_repfilteredf1")
+
+### Name data files
+outfiles <- c("stem-soil-39pt-data-2024-10-29-lenient.RDA",
+              "stem-soil-39pt-data-2024-10-29-lenientf1.RDA",
+              "stem-soil-39pt-data-2024-10-29-rare_lenient.RDA",
+              "stem-soil-39pt-data-2024-10-29-rare_lenientf1.RDA",
+              "stem-soil-39pt-data-2024-10-29-repfiltered.RDA",
+              "stem-soil-39pt-data-2024-10-29-rare_repfiltered.RDA",
+              "stem-soil-39pt-data-2024-10-29-repfilteredf1.RDA",
+              "stem-soil-39pt-data-2024-10-29-rare_repfilteredf1.RDA")
+
+### Select data file to load
+# data_selector <- 2
+
+for(data_selector in 1:8){
+### Load selected data file
+datafile <- paste0("Processed_data/", outfiles[data_selector])
+
 ### Load data
-dnamat <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[1]]
-stem.23 <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[2]]
-stem.16 <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[4]]
-traits <- readRDS("Processed_data/stem-soil-39pt-data-20240510.RDA")[[3]]
+dnamat <- readRDS(datafile)[[1]]
+stem.23 <- readRDS(datafile)[[2]]
+stem.16 <- readRDS(datafile)[[4]]
+traits <- readRDS(datafile)[[3]]
 sampxy <- read.csv("Raw_data/LFDP-sample39-coordinates.csv", row.names = 1)
+
+### Count number of valid eDNA sample points (out of 40)
+(npts <- nrow(stem.23$abund[[1]])-1000)
 
 ### Species code full plot summaries
 lfdp <- readRDS("Raw_data/LFDP2023-extract-v2-20240427.RDA")
 df <- readRDS("Raw_data/LFDP2016-extract-v2-20240427.RDA")
 
-### gOTU full pot summaries
+### gOTU full plot summaries
 lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
 lfdp16 <- readRDS("Raw_data/LFDP2016-extract-v2-20240427-gOTUs.RDA")
 
@@ -39,7 +69,7 @@ stem.pa.list16 <- lapply(stem.16$abund, function(x) 1*(x>0))
 cp <- rev(viridis::viridis(20))
 
 
-### TRY DELETING THE EDGE SAMPLES
+### TRY DELETING THE EDGE SAMPLES...
 # focsites <- rownames(sampxy)[sampxy$X<300 & sampxy$Y<450]
 # dnamat.pa <- dnamat.pa[rownames(dnamat.pa) %in% focsites,]
 # stem.23$abund <- lapply(stem.23$abund, function(x) x[rownames(x) %in% focsites,])
@@ -72,14 +102,20 @@ round(100 * (no_gotu_dna/no_gotu_stem), 1)
 (sd(rowSums(dnamat.pa)))
 (range(rowSums(dnamat.pa)))
 
-### Mean and SD of taxon richness in stem data
+### Mean and SD of taxon richness in stem data at 5 m
 (mean(rowSums(stem.23$abund[[1]]>0)))
+(sd(rowSums(dnamat.pa)))
+(range(rowSums(dnamat.pa)))
+
+### Mean and SD of taxon richness in stem data at 100 m
+(mean(rowSums(stem.23$abund[[20]]>0)))
 (sd(rowSums(dnamat.pa)))
 (range(rowSums(dnamat.pa)))
 
 
 # Total abundance of stems per gOTU (as log count in 100 m radius around 39 points) vs.number of sites where gOTU was detected in the DNA
 plot(lfdp23$total_abund, colSums(dnamat.pa), log='x')
+# text(lfdp23$total_abund, colSums(dnamat.pa), labels=colnames(dnamat.pa))
 
 # Significant positive correlation (i.e., more abundant gOTUs occur in more DNA samples)
 cor.test(colSums(dnamat.pa), log10(lfdp23$total_abund))
@@ -120,28 +156,28 @@ cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 # }
 
 
-dnaaccum <- specaccum(dnamat.pa)
+# dnaaccum <- specaccum(dnamat.pa)
+# 
+# fitsp1 <- fitspecaccum(dnaaccum, model="michaelis-menten")
+# fitsp2 <- fitspecaccum(dnaaccum, model="gleason")
+# fitsp3 <- fitspecaccum(dnaaccum, model="asymp")
+# fitsp4 <- fitspecaccum(dnaaccum, model="gompertz")
+# fitsp5 <- fitspecaccum(dnaaccum, model="weibull")
+# fitsp6 <- fitspecaccum(dnaaccum, model="michaelis-menten")
+# fitsp7 <- fitspecaccum(dnaaccum, model="gitay")
+# 
+# plot(predict(fitsp1, newdata = 1:1000), type='l', ylim=c(0, 80))
+# abline(h=78, lty=2)
+# lines(predict(fitsp2, newdata = 1:1000), col=2)
+# lines(predict(fitsp3, newdata = 1:1000), col=3)
+# lines(predict(fitsp4, newdata = 1:1000), col=4)
+# lines(predict(fitsp5, newdata = 1:1000), col=5)
+# lines(predict(fitsp6, newdata = 1:1000), col=6)
+# lines(predict(fitsp7, newdata = 1:1000), col=7)
 
-fitsp1 <- fitspecaccum(dnaaccum, model="michaelis-menten")
-fitsp2 <- fitspecaccum(dnaaccum, model="gleason")
-fitsp3 <- fitspecaccum(dnaaccum, model="asymp")
-fitsp4 <- fitspecaccum(dnaaccum, model="gompertz")
-fitsp5 <- fitspecaccum(dnaaccum, model="weibull")
-fitsp6 <- fitspecaccum(dnaaccum, model="michaelis-menten")
-fitsp7 <- fitspecaccum(dnaaccum, model="gitay")
 
-plot(predict(fitsp1, newdata = 1:1000), type='l', ylim=c(0, 80))
-abline(h=78, lty=2)
-lines(predict(fitsp2, newdata = 1:1000), col=2)
-lines(predict(fitsp3, newdata = 1:1000), col=3)
-lines(predict(fitsp4, newdata = 1:1000), col=4)
-lines(predict(fitsp5, newdata = 1:1000), col=5)
-lines(predict(fitsp6, newdata = 1:1000), col=6)
-lines(predict(fitsp7, newdata = 1:1000), col=7)
-
-
-library(fossil)
-fossil::chao2(dnamat.pa, taxa.row = F)
+# library(fossil)
+# fossil::chao2(dnamat.pa, taxa.row = F)
 
 
 
@@ -150,26 +186,43 @@ fossil::chao2(dnamat.pa, taxa.row = F)
 ##################
 ### Figure 1 - there are a variety of plots below; need to decide which to include
 
-pdf("Figures/Fig1.rank-abundance-plot.pdf")
+# pdf("Figures/Fig1.rank-abundance-plot.pdf")
+
+pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_", 
+           label[data_selector],
+           ".pdf"), width = 7, height = 6)
+
 
 par(mfrow=c(2,2), mar=c(4,4,1,1))
+
+# TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
+b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:npts,]>0)), col=cp,
+             xlab="Radius (m)", 
+             ylab="Taxon richness", 
+             xlim=c(-0.5,20), ylim=c(0,no_gotu_stem))
+b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
+axis(1, at=-0.5, labels="DNA")
+abline(v=0.25)
+abline(h=no_gotu_stem, lty=2)
+mtext("A", adj=0.1, line=-2)
+
 
 # Full plot abundance
 plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
      ylab="Rank abundance of DNA reads",
      xlab="Rank abundance of stems", 
      pch=21, bg='grey')
-mtext("A", adj=0.05, line=-1.5)
+mtext("B", adj=0.05, line=-1.5)
 cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)))
 
 
 plot(lfdp23$total_ba * 100,
-     (colSums(dnamat.pa)/39), log='x',
+     (colSums(dnamat.pa)/npts), log='x',
      ylab="Prop. of sites detected in DNA",
      xlab="Total basal area (m^2) [log10]",
      pch=21, bg='grey', ylim=c(0,1))
-mtext("B", adj=0.05, line=-1.5)
-cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/39)
+mtext("C", adj=0.05, line=-1.5)
+cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/npts)
 
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
@@ -186,6 +239,42 @@ cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/39)
 # abline(lm(colSums(dnamat.pa) ~ colSums(stem.23$ba[[20]])),
 #        col='blue', lwd=2)
 
+
+### Logistic regression with distance to nearest tree and detection
+y <- as.vector(dnamat.pa[1:npts,])
+x <- log10(as.vector(unlist(stem.23$nn[1:npts,])))
+
+plot(x, jitter(y, 0.1), pch=16, cex=0.75, col=rgb(0,0,0,0.05),
+     ylab="Presence in DNA",
+     xlab="Dist. to nearest tree (m)", #[log10]", 
+     xlim=c(0,3), cex.lab=1.25, 
+     axes=F)
+axis(1, c(0,1,2,3), labels=c(1, 10, 100,1000))
+axis(2)
+box()
+
+mod <- glm(as.vector(dnamat.pa) ~ x, family="binomial")
+nd <- data.frame(x=seq(0, max(x), length.out=100))
+ypred <- predict(mod, nd, type='response')
+# 
+# # Overall fit
+lines(nd$x, ypred, col="blue", lwd=3)
+# 
+# gOTU-specific fits
+coeffs <- vector()
+for(sp in 1:ncol(stem.23$nn)){
+  xx <- log(unlist(stem.23$nn[1:npts,sp]))
+  yy <- unlist(as.data.frame(1*(dnamat[,sp]>1)))
+  mod <- glm(yy ~ xx, family=binomial)
+  coeffs[sp] <- coef(mod)[2]
+  nd <- data.frame(xx=seq(0, max(x), length.out=100))
+  ypred <- predict(mod, nd, type='response')
+  lines(nd$xx, ypred, col=rgb(0,0,0,0.2), lwd=0.5)
+  #col=ifelse(coeffs[sp]>0, rgb(1,0,0,0.4), rgb(0,0,1,0.4)))
+}
+mtext("D", adj=0.05, line=-1.5)
+
+
 # plot(lfdp23$total_abund,
 #      jitter(1*(colSums(dnamat.pa)>0), 0.1), log='x',
 #      xlim=c(1,10000),
@@ -194,35 +283,25 @@ cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/39)
 #      pch=21, bg='grey')
 # mtext("C", adj=0.05, line=-1.5)
 # 
-# # # Add logistic prediction
-# # nd <- data.frame(a=seq(log10(min(lfdp23$total_abund)),
-# #                        log10(max(lfdp23$total_abund)),
-# #                        length.out=1000))
-# # ypred <- predict(m1, newdata=nd, type="response")
-# # lines(10^(nd$a), ypred, col='blue', lwd=2)
+# # Add logistic prediction
+# nd <- data.frame(a=seq(log10(min(lfdp23$total_abund)),
+#                        log10(max(lfdp23$total_abund)),
+#                        length.out=1000))
+# ypred <- predict(m1, newdata=nd, type="response")
+# lines(10^(nd$a), ypred, col='blue', lwd=2)
 # 
 # lfdp23$eDNA <- 1*(colSums(dnamat.pa)>0)
 # lfdp23[order(lfdp23$eDNA, lfdp23$total_abund),]
 
 
-# TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
-b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:39,]>0)), col=cp,
-             xlab="Radius (m)", 
-             ylab="Taxon richness", 
-             xlim=c(-0.5,20), ylim=c(0,79))
-b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
-axis(1, at=-0.5, labels="DNA")
-abline(v=0.25)
-abline(h=no_gotu_stem, lty=2)
-mtext("C", adj=0.1, line=-2)
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
-plot(specaccum(dnamat.pa),
-     xlab="Number of samples",
-     ylab="Taxon richness",
-     ylim=c(0,79))
-abline(h=no_gotu_stem, lty=2)
-mtext("D", adj=0.05, line=-2)
+# plot(specaccum(dnamat.pa),
+#      xlab="Number of samples",
+#      ylab="Taxon richness",
+#      ylim=c(0,79))
+# abline(h=no_gotu_stem, lty=2)
+# mtext("D", adj=0.05, line=-2)
 
 ### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
 # df <- data.frame(sapply(out, "length<-", max(lengths(out))))
@@ -234,6 +313,8 @@ mtext("D", adj=0.05, line=-2)
 # abline(h=no_gotu_stem, lty=2)
 
 dev.off()
+
+
 
 
 ########################################################
@@ -281,13 +362,24 @@ rbind(table(rownames(lfdp23), lfdp23$low_LU_abund>0)[,2],
 # Correlation of DNA and stem species richness across spatial scales
 # Using both raw and rarefied data
 corrs <- corrs_rare <- list()
-for(r in seq_along(stem.23$abund)){
-  corrs[[r]] <- cor.test(rowSums(dnamat>0), rowSums(stem.23$abund[[r]][1:39,]>0))
-  
-  corrs_rare[[r]] <- cor.test(rarefy(stem.23$abund[[r]][1:39,], 
-                                        min(rowSums(stem.23$abund[[r]][1:39,]))),
-                                 rarefy(dnamat, min(rowSums(dnamat))))
+
+# For some reason, with the 7th file, the rarefy function is throwing error
+# It seems to be some kind of strange formatting of the `dnamat` numbers but I cannot solve it
+# If I save it and read back in then it seems to convert properly and works as expected.
+if(data_selector==7){
+  write.csv(dnamat, file="Processed_data/temp_dnamat.csv")
+  dnamat <- read.csv("Processed_data/temp_dnamat.csv", row.names = 1)
 }
+
+for(r in seq_along(stem.23$abund)){
+  
+  corrs[[r]] <- cor.test(rowSums(dnamat > 0), rowSums(stem.23$abund[[r]][1:npts,]>0))
+
+  corrs_rare[[r]] <- cor.test(rarefy(stem.23$abund[[r]][1:npts,],
+                                     min(rowSums(stem.23$abund[[r]][1:npts,]))),
+                              rarefy(dnamat, min(rowSums(dnamat))))
+}
+
 
 
 # corrs <- list()
@@ -297,7 +389,11 @@ for(r in seq_along(stem.23$abund)){
 # }
 
 ### Figure 2
-pdf("Figures/Fig2.Richness-correlations.pdf", width = 9, height = 4)
+# pdf("Figures/Fig2.Richness-correlations.pdf", width = 9, height = 4)
+
+pdf(paste0("Figures/compare_filtering/Fig2.Richness-correlations_", 
+    label[data_selector],
+    ".pdf"), width = 9, height = 4)
 
 par(mfrow=c(1,2))
 
@@ -334,19 +430,17 @@ dev.off()
 ### 2. Procrusties test of stem ordination and dna ordination
 ########################################################
 
-# Similar to Mantel test, lots to consider in terms of transformation, dist metric, ordination...
-
-prores <- list()
-for(r in 1:20){
-  dnaord <- metaMDS(dnamat.pa, distance="jaccard")
-  
-  
-  
-  dnaord <- prcomp(dnamat)
-  
-  stemord <- metaMDS(1*(stem.23$abund[[r]][1:39,]>0), distance="jaccard")
-  prores[[r]] <- protest(dnaord, stemord, symmetric=T)
-}
+### Similar to Mantel test, lots to consider in terms of transformation, dist metric, ordination...
+# 
+# prores <- list()
+# for(r in 1:20){
+#   dnaord <- metaMDS(dnamat.pa, distance="jaccard")
+#   
+#   dnaord <- prcomp(dnamat)
+#   
+#   stemord <- metaMDS(1*(stem.23$abund[[r]][1:npts,]>0), distance="jaccard")
+#   prores[[r]] <- protest(dnaord, stemord, symmetric=T)
+# }
 
 # A smaller Procrustes SS indicates a better fit or alignment between the two sets of points. It essentially tells you how well one set of points can be adjusted to match another set, considering only rotation, scaling, and translation as transformation operations.
 # The correlation (x$t0) tells you the goodness-of-fit between the two configurations of multivariate data.
@@ -356,53 +450,53 @@ for(r in 1:20){
 
 # vals <- sapply(prores, function(x) summary(permustats(x))$z)
 
-vals <- sapply(prores, function(x) x$t0)
-
-quants <- sapply(prores, function(x) {
-  quantile(x$t0 - x$t, probs=c(0.025, 0.975)) + median(x$t)}
-  )
+# vals <- sapply(prores, function(x) x$t0)
+# 
+# quants <- sapply(prores, function(x) {
+#   quantile(x$t0 - x$t, probs=c(0.025, 0.975)) + median(x$t)}
+#   )
 
 # sig <- sapply(prores, function(x) x$signif)
 
-### Figure 3
-pdf("Figures/Fig3.Procrustes_correlations.pdf", width = 8, height = 8)
-
-par(mfrow=c(1,1))
-plot(vals, 
-     pch=21, bg=cp, cex=2, axes=F,
-     xlab="Radius (m)",
-     ylab="Procrustes Correlation", ylim=c(-0.1, 0.7))
-segments(1:20, quants[1,], 1:20, quants[2,], lwd=2)
-# polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-points(vals, pch=21, bg=cp, cex=2)
-axis(1, labels=seq(5, 100, 5), at=1:20)
-axis(2)
-abline(h=0, lty=2)
-graphics::box()
-
-dev.off()
+# ### Figure 3
+# pdf("Figures/Fig3.Procrustes_correlations.pdf", width = 8, height = 8)
+# 
+# par(mfrow=c(1,1))
+# plot(vals, 
+#      pch=21, bg=cp, cex=2, axes=F,
+#      xlab="Radius (m)",
+#      ylab="Procrustes Correlation", ylim=c(-0.1, 0.7))
+# segments(1:20, quants[1,], 1:20, quants[2,], lwd=2)
+# # polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+# points(vals, pch=21, bg=cp, cex=2)
+# axis(1, labels=seq(5, 100, 5), at=1:20)
+# axis(2)
+# abline(h=0, lty=2)
+# graphics::box()
+# 
+# dev.off()
 
 
 
 ### COMPARE WITH RANDOM POINTS
-prores_rand <- list()
-for(r in 1:20){
-  dnaord <- metaMDS(dnamat.pa, distance="jaccard")
-  stemord <- metaMDS(1*(stem.23$abund[[r]][151:189,]>0), distance="jaccard")
-  prores_rand[[r]] <- protest(dnaord, stemord, symmetric=T)
-}
-
-vals <- sapply(prores_rand, function(x) summary(permustats(x))$z)
-par(mar=c(4,4,1,1))
-plot(vals, 
-     pch=21, bg=cp, cex=2, axes=F,
-     xlab="Radius (m)",
-     ylab="Procrustes Correlation SES")
-polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-points(vals, pch=21, bg=cp, cex=2)
-axis(1, labels=seq(5, 100, 5), at=1:20)
-axis(2)
-graphics::box()
+# prores_rand <- list()
+# for(r in 1:20){
+#   dnaord <- metaMDS(dnamat.pa, distance="jaccard")
+#   stemord <- metaMDS(1*(stem.23$abund[[r]][151:(150+npts),]>0), distance="jaccard")
+#   prores_rand[[r]] <- protest(dnaord, stemord, symmetric=T)
+# }
+# 
+# vals <- sapply(prores_rand, function(x) summary(permustats(x))$z)
+# par(mar=c(4,4,1,1))
+# plot(vals, 
+#      pch=21, bg=cp, cex=2, axes=F,
+#      xlab="Radius (m)",
+#      ylab="Procrustes Correlation SES")
+# polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+# points(vals, pch=21, bg=cp, cex=2)
+# axis(1, labels=seq(5, 100, 5), at=1:20)
+# axis(2)
+# graphics::box()
 
 
 ########################################################
@@ -412,6 +506,9 @@ graphics::box()
 ### COMPUTE BALANCED ACCURACY 
 ### (INCLUDING STANDARDIZED EFFECT SIZE OF BALANCED ACCURACY)
 ### **Note that this takes while to run**
+
+message(paste("working on confusion matrix for", datafile, "; dataset", data_selector))
+
 
 library(parallel)
 
@@ -425,7 +522,7 @@ cl <- makeCluster(num_cores)
 conf_stats_obs_list <- vector("list", length = 20)
 conf_stats_ses_list <- vector("list", length = 20)
 
-nruns <- 1000
+nruns <- 999
 
 # Function to compute standardized effect size
 ses <- function(obs, rand){
@@ -436,25 +533,25 @@ ses <- function(obs, rand){
 clusterEvalQ(cl, library(caret))
 
 # Export necessary objects to all nodes
-clusterExport(cl, c("dnamat.pa", "stem.23", "nruns", "ses", "nruns"))
+clusterExport(cl, c("dnamat.pa", "stem.23", "nruns", "ses", "nruns", "npts"))
 
 # Parallel loop over radius
 results <- parLapply(cl, 1:20, function(r) {
   message(paste("radius =", r))
   
   # Initialize matrices to store observation and SES results
-  conf_stats_obs <- matrix(nrow = 39, ncol = 11)
-  conf_stats_ses <- matrix(nrow = 39, ncol = 11)
+  conf_stats_obs <- matrix(nrow = npts, ncol = 11)
+  conf_stats_ses <- matrix(nrow = npts, ncol = 11)
   
   # Perform computations for each site
-  for (site in 1:39) {
+  for (site in 1:npts) {
     # Compute confusion matrix for observation
     confus_obs <- caret::confusionMatrix(table(dnamat.pa[site,], 
                                                1 * (stem.23$abund[[r]][site,] > 0)))
     conf_stats_obs[site,] <- confus_obs$byClass
     
     # Generate randomizations
-    randomizations <- 1:nruns + 39
+    randomizations <- 1:nruns + npts
     confus_rands <- lapply(randomizations, function(s) {
       confusionMatrix(table(dnamat.pa[site,],
                             1 * (stem.23$abund[[r]][s,] > 0)))
@@ -489,19 +586,24 @@ for (i in 1:20) {
 ba_obs <- do.call(cbind, lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`))
 ba_ses <- do.call(cbind, lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`))
 
-m2_obs <- aov(as.numeric(ba_obs) ~ as.factor(rep(1:20, each=39)))
+m2_obs <- aov(as.numeric(ba_obs) ~ as.factor(rep(1:20, each=npts)))
 anova(m2_obs)
 
 ### However, there is no difference in SES balanced accuracy across the scales
 ### A slight hump appers in ~ 30-40 m range but these are not sig different from 
-m2_ses <- aov(as.numeric(ba_ses) ~ as.factor(rep(1:20, each=39)))
+m2_ses <- aov(as.numeric(ba_ses) ~ as.factor(rep(1:20, each=npts)))
 anova(m2_ses)
 TukeyHSD(m2_ses)
 
 
 ### Figure 4
 
-pdf("Figures/Fig4.Confusion-matrix-stats.pdf", width = 8, height = 10)
+# pdf("Figures/Fig4.Confusion-matrix-stats.pdf", width = 8, height = 10)
+
+pdf(paste0("Figures/compare_filtering/Fig4.Confusion-matrix-stats_", 
+           label[data_selector],
+           ".pdf"), width = 8, height = 10)
+
 
 par(mfrow=c(3,2), mar=c(4,4,1,1), oma=c(1,1,1,1))
 
@@ -524,7 +626,7 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         axes=F, col=cp, add=T)
 graphics::box()
-mtext("B", adj=0, line=0.5)
+mtext("D", adj=0, line=0.5)
 
 # Specificity (true negative rate)
 boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
@@ -533,7 +635,7 @@ boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity),
 axis(1, labels=names(stem.23$abund), at=1:20)
 axis(2)
 graphics::box()
-mtext("C", adj=0, line=0.5)
+mtext("B", adj=0, line=0.5)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         ylab="Specificity (SES)", 
@@ -544,7 +646,7 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         axes=F, col=cp, add=T)
 graphics::box()
-mtext("D", adj=0, line=0.5)
+mtext("E", adj=0, line=0.5)
 
 # Balanced Accuracy
 boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`), 
@@ -553,7 +655,7 @@ boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`),
 axis(1, labels=names(stem.23$abund), at=1:20)
 axis(2)
 graphics::box()
-mtext("E", adj=0, line=0.5)
+mtext("C", adj=0, line=0.5)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
         ylab="Balanced Accuracy (SES)", 
@@ -568,7 +670,7 @@ graphics::box()
 mtext("F", adj=0, line=0.5)
 
 dev.off()
-
+}
 
 plot(sapply(conf_stats_ses_list, function(x) median(x$`Balanced Accuracy`)))
 

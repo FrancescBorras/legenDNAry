@@ -1,3 +1,7 @@
+library(phyloseq)
+library(microViz)
+load("Raw_data/CescPRdata_v2.RData")
+
 ## The object with the reflib / Genbank ID indexing is a list called all.taxs.source.otu
 ## it is larger than the OTU tables oin your phlyoseq objects because it includes all OTUs
 ## even ones that had no classification from Genbank that were thrown out immediately
@@ -13,6 +17,7 @@ R2Ref.lib.ids <- lapply(R2all.taxs.source.otu, function(x) subset(x, idsource ==
 str(R1Ref.lib.ids)
 View(R1Ref.lib.ids$dada.pspool.nc.lulu)
 View(R2Ref.lib.ids$dada.pspool.nc.lulu)
+
 ## Note that OTU34 needs removal - it was from an unidentified "vine" in the plot (i.e. paraphyletic)
 ## and thus is not in the census data as well as having no identification use at all
 ## Ref.lib.ids <- lapply(Ref.lib.ids, function(x) x[!(row.names(x) %in% "OTU34"), ])
@@ -89,14 +94,8 @@ sp3
 # Gradient between n colors
 sp3+scale_color_gradientn(colours = rainbow(5))+ labs(colour = "Seq. Depth")
 
-## So most reads and about 60% of OTUs remain when only using the reference library matchs
+## So most reads and about 60% of OTUs remain when only using the reference library matches
 ## and there is no clear relationship here with individual sample sequencing depth (the colours)
-
-## Now to link the OTU names to the POTU table that cesc has, just access the object:
-
-## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
-# otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
 
 ### Now to get some filtered variants for analyses representing lenient and stringent filtering
 ### Note that first sub-setting data so that only samples from the biggrid (no incubation experiments etc)
@@ -155,14 +154,13 @@ rare_repfilteredf1 <- rarfun(repfilteredf1)
 #4b rare_repfilteredf1: repfilteredf1 (#4) but all libraries normalized by rarefying to an even depth = 55 OTUs
 
 
+data <- list(lenient=lenient,
+             rare_lenient=rare_lenient,
+             lenientf1=lenientf1,
+             rare_lenientf1=rare_lenientf1,
+             repfiltered=repfiltered,
+             rare_repfiltered=rare_repfiltered,
+             repfilteredf1=repfilteredf1,
+             rare_repfilteredf1=rare_repfilteredf1)
 
-lenient
-rare_lenient
-lenientf1
-rare_lenientf1
-repfiltered
-rare_repfiltered
-repfilteredf1
-rare_repfilteredf1
-
-
+saveRDS(data, "Processed_data/PR_eDNA-for-analysis_2024-10-29.RData")
