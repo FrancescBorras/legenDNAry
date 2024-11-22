@@ -36,9 +36,9 @@ outfiles <- c("stem-soil-39pt-data-2024-10-29-lenient.RDA",
               "stem-soil-39pt-data-2024-10-29-rare_repfilteredf1.RDA")
 
 ### Select data file to load
-# data_selector <- 2
+data_selector <- 3
 
-for(data_selector in 1:8){
+# for(data_selector in 1:8){
 ### Load selected data file
 datafile <- paste0("Processed_data/", outfiles[data_selector])
 
@@ -103,18 +103,18 @@ round(100 * (no_gotu_dna/no_gotu_stem), 1)
 (range(rowSums(dnamat.pa)))
 
 ### Mean and SD of taxon richness in stem data at 5 m
-(mean(rowSums(stem.23$abund[[1]]>0)))
-(sd(rowSums(dnamat.pa)))
-(range(rowSums(dnamat.pa)))
+(mean(range(rowSums(stem.23$abund[[1]]>0)[1:npts])))
+(sd(range(rowSums(stem.23$abund[[1]]>0)[1:npts])))
+(range(range(rowSums(stem.23$abund[[1]]>0)[1:npts])))
 
 ### Mean and SD of taxon richness in stem data at 100 m
-(mean(rowSums(stem.23$abund[[20]]>0)))
-(sd(rowSums(dnamat.pa)))
-(range(rowSums(dnamat.pa)))
-
+(mean(range(rowSums(stem.23$abund[[20]]>0)[1:npts])))
+(sd(range(rowSums(stem.23$abund[[20]]>0)[1:npts])))
+(range(range(rowSums(stem.23$abund[[20]]>0)[1:npts])))
 
 # Total abundance of stems per gOTU (as log count in 100 m radius around 39 points) vs.number of sites where gOTU was detected in the DNA
 plot(lfdp23$total_abund, colSums(dnamat.pa), log='x')
+plot(lfdp16$total_abund, colSums(dnamat.pa), log='x')
 # text(lfdp23$total_abund, colSums(dnamat.pa), labels=colnames(dnamat.pa))
 
 # Significant positive correlation (i.e., more abundant gOTUs occur in more DNA samples)
@@ -196,7 +196,8 @@ pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_",
 par(mfrow=c(2,2), mar=c(4,4,1,1))
 
 # TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
-b <- boxplot(sapply(stem.23$ba, function(x) rowSums(x[1:npts,]>0)), col=cp,
+b <- boxplot(sapply(stem.23$abund, function(x) rowSums(x>0)[1:npts]), 
+             col=cp,
              xlab="Radius (m)", 
              ylab="Taxon richness", 
              xlim=c(-0.5,20), ylim=c(0,no_gotu_stem))
@@ -205,7 +206,6 @@ axis(1, at=-0.5, labels="DNA")
 abline(v=0.25)
 abline(h=no_gotu_stem, lty=2)
 mtext("A", adj=0.1, line=-2)
-
 
 # Full plot abundance
 plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
@@ -317,40 +317,11 @@ dev.off()
 
 
 
-########################################################
-########################################################
-##################
-### LAND USE ZONE ANALYSIS
-##################
-########################################################
-########################################################
-
-### NOT TOTALLY SURE WHAT TO DO WITH THIS PART.... LET'S REVISIT AFTER CESC'S THESIS
-
-# Identify LU history for each sample site
-low <- rownames(sampxy)[sampxy$CoverClass < 4]
-high <- rownames(sampxy)[sampxy$CoverClass == 4]
-
-# DNA species richness in different land-use categories
-sum(1 * (colSums(dnamat[sampxy$CoverClass < 4,])>0))
-sum(1 * (colSums(dnamat[sampxy$CoverClass == 4,])>0))
-
-# Stem species richness in different land-use categories
-sum(lfdp23$low_LU_abund>0)
-sum(lfdp23$high_LU_abund>0)
-
-
-rbind(table(rownames(lfdp23), lfdp23$low_LU_abund>0)[,2],
-      table(rownames(lfdp23), lfdp23$high_LU_abund>0)[,2])
-
-
-
-
 
 ########################################################
 ########################################################
 ##################
-### 39 Point Analysis
+### 40 Point Analysis
 ##################
 ########################################################
 ########################################################
@@ -362,6 +333,7 @@ rbind(table(rownames(lfdp23), lfdp23$low_LU_abund>0)[,2],
 # Correlation of DNA and stem species richness across spatial scales
 # Using both raw and rarefied data
 corrs <- corrs_rare <- list()
+corrs16 <- corrs_rare16 <- list()
 
 # For some reason, with the 7th file, the rarefy function is throwing error
 # It seems to be some kind of strange formatting of the `dnamat` numbers but I cannot solve it
@@ -374,10 +346,15 @@ if(data_selector==7){
 for(r in seq_along(stem.23$abund)){
   
   corrs[[r]] <- cor.test(rowSums(dnamat > 0), rowSums(stem.23$abund[[r]][1:npts,]>0))
-
+  corrs16[[r]] <- cor.test(rowSums(dnamat > 0), rowSums(stem.16$abund[[r]][1:npts,]>0))
+  
   corrs_rare[[r]] <- cor.test(rarefy(stem.23$abund[[r]][1:npts,],
                                      min(rowSums(stem.23$abund[[r]][1:npts,]))),
                               rarefy(dnamat, min(rowSums(dnamat))))
+  corrs_rare16[[r]] <- cor.test(rarefy(stem.16$abund[[r]][1:npts,],
+                                     min(rowSums(stem.16$abund[[r]][1:npts,]))),
+                              rarefy(dnamat, min(rowSums(dnamat))))
+  
 }
 
 
@@ -589,11 +566,23 @@ ba_ses <- do.call(cbind, lapply(conf_stats_ses_list, function(x) x$`Balanced Acc
 m2_obs <- aov(as.numeric(ba_obs) ~ as.factor(rep(1:20, each=npts)))
 anova(m2_obs)
 
+
 ### However, there is no difference in SES balanced accuracy across the scales
 ### A slight hump appers in ~ 30-40 m range but these are not sig different from 
 m2_ses <- aov(as.numeric(ba_ses) ~ as.factor(rep(1:20, each=npts)))
 anova(m2_ses)
 TukeyHSD(m2_ses)
+
+### Median Sensitivity, Specificity & Balanced Accuracy at 5 m
+median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[1]])
+median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[1]])
+median(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`)[[1]])
+
+### Median Sensitivity, Specificity & Balanced Accuracy at 100 m
+median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[20]])
+median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[20]])
+median(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`)[[5]])
+
 
 
 ### Figure 4
@@ -701,5 +690,34 @@ t.test(conf_stats_ses_list[[1]]$`Balanced Accuracy`,
 
 
 
+
+
+
+
+########################################################
+########################################################
+##################
+### LAND USE ZONE ANALYSIS
+##################
+########################################################
+########################################################
+
+### NOT TOTALLY SURE WHAT TO DO WITH THIS PART.... LET'S REVISIT AFTER CESC'S THESIS
+
+# Identify LU history for each sample site
+low <- rownames(sampxy)[sampxy$CoverClass < 4]
+high <- rownames(sampxy)[sampxy$CoverClass == 4]
+
+# DNA species richness in different land-use categories
+sum(1 * (colSums(dnamat[sampxy$CoverClass < 4,])>0))
+sum(1 * (colSums(dnamat[sampxy$CoverClass == 4,])>0))
+
+# Stem species richness in different land-use categories
+sum(lfdp23$low_LU_abund>0)
+sum(lfdp23$high_LU_abund>0)
+
+
+rbind(table(rownames(lfdp23), lfdp23$low_LU_abund>0)[,2],
+      table(rownames(lfdp23), lfdp23$high_LU_abund>0)[,2])
 
 
