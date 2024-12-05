@@ -34,6 +34,7 @@ R2reflib.otus <- lapply(R2Ref.lib.ids, function(x) rownames(x))
 
 ## So you make your new lists with (for example, on the R1phylo.plants.tax object:
 ## bob I know you would write a loop because you are a wild and crazy guy...
+library(phyloseq)
 cutlist1 <- prune_taxa(R1reflib.otus[[1]], R1phylo.plants.tax[[1]])
 cutlist2 <- prune_taxa(R1reflib.otus[[2]], R1phylo.plants.tax[[2]])
 cutlist3 <- prune_taxa(R1reflib.otus[[3]], R1phylo.plants.tax[[3]])
@@ -57,26 +58,51 @@ names(R2ref.lib.list) <- c("R2.dada.nopool.reflib", "R2.dada.pool.reflib" , "R2.
                            "R2.lulu.nopool.reflib", "R2.lulu.pool.reflib", "R2.lulu.pspool.reflib" )
 
 ## Getting how many sequences are cut out when only including OTUs - R1.lulu.pspool.reflib
-precutsums <- rowSums(otu_table(R1phylo.plants.tax[[6]]))
-postcutsums <- rowSums(otu_table(cutlist6))
+## For paper, excluding all samples except big grid (40 points across LFDP) and small grid (2x2m plot)
+library(microViz)
+precut <- R1phylo.plants.tax[[6]]
+precut <- prune_samples(grepl("bigplot", precut@sam_data$experiment), precut)
+precut <- subset_samples(precut, experiment != "bigplot/samptreat")
+precut <- subset_samples(precut, DNAtreat == "clean")
+precut@sam_data$origreflibsize <- rowSums(otu_table(precut))
+precut@sam_data$origreflibotus <- rowSums(otu_table(precut) != 0)
+precut <-phyloseq_validate(precut, remove_undetected = TRUE)
+
+postcut <- R1ref.lib.list[[6]]
+postcut <- prune_samples(grepl("bigplot", postcut@sam_data$experiment), postcut)
+postcut <- subset_samples(postcut, experiment != "bigplot/samptreat")
+postcut <- subset_samples(postcut, DNAtreat == "clean")
+postcut@sam_data$origreflibsize <- rowSums(otu_table(precut))
+postcut@sam_data$origreflibotus <- rowSums(otu_table(precut) != 0)
+postcut@sam_data$afterlibsize <- rowSums(otu_table(postcut))
+postcut@sam_data$afterlibotus <- rowSums(otu_table(postcut) != 0)
+postcut <-phyloseq_validate(postcut, remove_undetected = TRUE)
+
+
+precutsums <- rowSums(otu_table(precut))
+postcutsums <- rowSums(otu_table(postcut))
 
 ##plots of sequences remaining after filtering for only reference library OTUs
 ## total sequences per sample before V after
 plot(precutsums, postcutsums, xlab ="All Plants OTUs - library size", ylab ="Only Ref. Lib. OTUs - library size ")
 abline(0,1, col="red")
 ## proportion remaining for each sample sequence count
-boxplot(postcutsums/precutsums)
+boxplot(postcutsums/precutsums, ylab = "Prop. soil reads matching reference library taxa")
+
+summary(postcutsums/precutsums)
+sd(postcutsums/precutsums)
 
 ## total OTUs  per sample
-precutotusums <- apply(otu_table(R1phylo.plants.tax[[6]]), MARGIN=1, FUN=function(x) {length( x[x > 0] )} ) 
-postcutotusums <- apply(otu_table(cutlist6), MARGIN=1, FUN=function(x) {length( x[x > 0] )} ) 
+precutotusums <- apply(otu_table(precut), MARGIN=1, FUN=function(x) {length( x[x > 0] )} ) 
+postcutotusums <- apply(otu_table(postcut), MARGIN=1, FUN=function(x) {length( x[x > 0] )} ) 
 
 
 plot(precutotusums, postcutotusums, xlab ="All Plants OTUs count", ylab ="Only Ref. Lib. OTUs count ")
 abline(0,1, col="red")
 
 ## proportion OTUs remaining in each sample after filtering for what is in reference library
-boxplot(postcutotusums/precutotusums)
+boxplot(postcutotusums/precutotusums, ylab = "Prop. soil OTUs matching reference library taxa")
+
 plot(postcutsums/precutsums, postcutotusums/precutotusums, xlab ="Prop. reads remaining after ref. lib. filtering" , ylab ="Prop. OTUs remaining after ref. lib. filtering")
 ## reads
 summary(postcutsums/precutsums)
@@ -84,22 +110,112 @@ summary(postcutsums/precutsums)
 summary(postcutotusums/precutotusums)
 # so in general 91-98% (range of mean & median) of reads are from the reference library taxa 
 # equating to 60 - 61.5% of OTUs (from the reference library taxa)
-size <- rowSums(otu_table(R1phylo.plants.tax[[6]]))
+size <- rowSums(otu_table(precut))
 finsum <- as.data.frame(cbind(postcutsums/precutsums, postcutotusums/precutotusums, size))
 colnames(finsum) <- c("libprop", "otuprop", "libsize")
+
+### making a final summary plot of the proportion of soil reads and OTUs that reference library taxa
+# Load necessary libraries
 library(ggplot2)
-sp3<-ggplot(finsum, aes(x=libprop, y=otuprop, color=libsize)) + geom_point()+
-labs(x = "Prop. reads remaining after ref. lib. filtering") + labs(y = "Prop. OTUs remaining after ref. lib. filtering")
-sp3
-# Gradient between n colors
-sp3+scale_color_gradientn(colours = rainbow(5))+ labs(colour = "Seq. Depth")
+library(patchwork)
+
+# Prepare data for the combined boxplot
+combined_data <- data.frame(
+  value = c(postcutsums / precutsums, postcutotusums / precutotusums),
+  type = rep(c("Reads", "OTUs"), each = length(postcutsums))
+)
+
+# Combined boxplot for Reads and OTUs (no legend)
+plot_a <- ggplot(combined_data, aes(x = type, y = value, fill = type)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("Reads" = "blue", "OTUs" = "orange")) + # Custom box colors
+  labs(
+    y = "Prop. matching reference library taxa",
+    x = NULL,
+    fill = NULL # Removes the legend title
+  ) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.title.y = element_text(size = 9),
+    axis.text = element_text(size = 8),
+    legend.position = "none", # Remove legend
+    plot.margin = margin(5, 5, 2, 5) # Reduce top margin
+  ) +
+  annotate("text", x = 0.5, y = max(combined_data$value) + 0.05, label = "A", size = 5, fontface = "bold", hjust = 0)
+
+# Scatter plot with default vertical legend
+plot_b <- ggplot(finsum, aes(x = libprop, y = otuprop, color = libsize)) +
+  geom_point() +
+  scale_color_gradientn(colours = rainbow(5)) + # Custom color gradient
+  labs(
+    x = "Prop. soil reads matching reference library",
+    y = "Prop. soil OTUs matching reference library",
+    colour = "Seq. Depth" # Legend label
+  ) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.title = element_text(size = 9),
+    axis.text = element_text(size = 8),
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    legend.position = "right", # Default vertical legend on the right
+    plot.margin = margin(5, 5, 2, 5) # Reduce top margin
+  ) +
+  annotate("text", x = min(finsum$libprop), y = max(finsum$otuprop) + 0.05, label = "B", size = 5, fontface = "bold", hjust = 0)
+
+# Combine the combined boxplot and scatter plot into a single row
+combined_plot <- plot_a + plot_b + plot_layout(ncol = 2)
+
+# Save the combined plot as a PDF
+pdf("FigureS8.pdf", width = 17 / 2.54, height = 8 / 2.54) # Convert cm to inches
+print(combined_plot)
+dev.off()
 
 ## So most reads and about 60% of OTUs remain when only using the reference library matches
 ## and there is no clear relationship here with individual sample sequencing depth (the colours)
 
+<<<<<<< Updated upstream
+=======
+### Now separating just the BIG GRID and SMALL GRID samples separately to summarize
+
+biggridprecut <- subset_samples(precut, experiment != "bigplot/smallss")
+biggridprecut <- prune_samples(!grepl("single", biggridprecut@sam_data$discretehomo), biggridprecut)
+biggridprecut@sam_data$origreflibsize <- rowSums(otu_table(biggridprecut))
+biggridprecut@sam_data$origreflibotus <- rowSums(otu_table(biggridprecut) != 0)
+biggridpostcut <- subset_samples(postcut, experiment != "bigplot/smallss")
+biggridpostcut <- prune_samples(!grepl("single", biggridpostcut@sam_data$discretehomo), biggridpostcut)
+biggridpostcut@sam_data$origreflibsize <- rowSums(otu_table(biggridpostcut))
+biggridpostcut@sam_data$origreflibotus <- rowSums(otu_table(biggridpostcut) != 0)
+biggridprecut <-phyloseq_validate(biggridprecut, remove_undetected = TRUE)
+biggridpostcut <- phyloseq_validate(biggridpostcut, remove_undetected = TRUE)
+biggridprecut
+biggridpostcut
+smallgridprecut <- subset_samples(precut, experiment == "bigplot/smallss")
+smallgridprecut <-phyloseq_validate(smallgridprecut, remove_undetected = TRUE)
+smallgridpostcut <- subset_samples(postcut, experiment == "bigplot/smallss")
+smallgridpostcut <-phyloseq_validate(smallgridpostcut, remove_undetected = TRUE)
+
+###### Checking library size effects with postcut samples
+tab <- biggridpostcut
+ttab <- otu_table(tab)
+class(ttab) <- "matrix" 
+library(vegan)
+raremin <- min(rowSums(ttab))
+raremin
+rarecurve(ttab, step = 10, col = "blue", label = FALSE, xlim=c(0,200000))
+rarecurve(ttab, step = 10, sample = 12302, col = "blue", label = FALSE, xlim=c(0,200000))
+
+## Now to link the OTU names to the POTU table that cesc has, just access the object:
+
+## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
+# otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
+otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
+unique(otu.potu.link$dada.pspool.nc.lulu$OTU)
+>>>>>>> Stashed changes
 ### Now to get some filtered variants for analyses representing lenient and stringent filtering
 ### Note that first sub-setting data so that only samples from the biggrid (no incubation experiments etc)
 ### are included
+library(microViz)
 lenient <- R1ref.lib.list[[6]]
 lenient <- prune_samples(grepl("bigplot", lenient@sam_data$experiment), lenient)
 lenient <- subset_samples(lenient, experiment != "bigplot/samptreat")
@@ -107,6 +223,29 @@ lenient <- subset_samples(lenient, DNAtreat == "clean")
 lenient@sam_data$origreflibsize <- rowSums(otu_table(lenient))
 lenient@sam_data$origreflibotus <- rowSums(otu_table(lenient) != 0)
 lenient <-phyloseq_validate(lenient, remove_undetected = TRUE)
+
+tabjoin <- merge(sample_data(biggridpostcut), otu.potu.link$dada.pspool.nc.lulu$OTU
+                 , by.x =)
+colnames(otu_table(biggridpostcut))
+## Getting stats on library sizes
+biggridsums <- rowSums(otu_table(lenient))
+
+## Removing samples with >10,000 sequences in the sample
+n <- 10000
+
+# Check the sample sums
+sample_counts <- sample_sums(lenient)
+
+# Filter samples that meet the threshold
+lenient <- prune_samples(sample_counts >= n, lenient)
+
+# Check the number of samples remaining
+nsamples(lenient)
+
+### getting average and SD of library sizes
+summary(sample_sums(lenient))
+##se of lenient
+sd(sample_sums(lenient))/sqrt(length(sample_sums(lenient)))
 
 repfiltered <- R2ref.lib.list[[6]] ## same PS object as lenient, except only census OTUs occuring at at least 2/3 PCRs
 repfiltered <- prune_samples(grepl("bigplot", repfiltered@sam_data$experiment), repfiltered)

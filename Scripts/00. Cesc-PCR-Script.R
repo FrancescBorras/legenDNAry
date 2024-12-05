@@ -834,6 +834,7 @@ p2pspool.lulu.index <- index.info(p2pspool.lulu)
 #BiocManager::install("decontam")
 library(decontam)
 library(ggplot2)
+library(dplyr)
 ## Looking at plate 1
 df <- p1nopool.lulu.index # Put sample_data into a ggplot-friendly data.frame
 df <- df[order(df$totseq),]
@@ -914,14 +915,19 @@ p1data1 <-  lapply(p1data, droprep2p1)
 p2indexinfo1 <- lapply(p2indexinfo, droprep4p2)
 p2data1 <-  lapply(p2data, droprep4p2)
 
+##exporting this info for results summary
+write.csv(p1indexinfo1$p1seqtab.nochim, "plate1postrepremoval.csv")
+write.csv(p2indexinfo1$p2seqtab.nochim, "plate2postrepremoval.csv")
 
 ## Now we have curated lists of data and index info where spurious PCR replicates are removed. We can now discount OTUs that appear in control samples
 ## and discard all control samples from data matrices, then move on to analysing the sample data.
 
 ## First lets assess the rate of tagjumping across our entire libraries for each library made (plate 1 & Plate 2)
 # PLate 1 rates of tag jumping:
+lapply(p1indexinfo1, function(x) sum(x$totseq))
 lapply(p1indexinfo1, function(x) sum(subset(x, sampletype == "Tagcatch")$totseq)/sum(x$totseq))
 # PLate 2 rates of tag jumping:
+lapply(p2indexinfo1, function(x) sum(x$totseq))
 lapply(p2indexinfo1, function(x) sum(subset(x, sampletype == "Tagcatch")$totseq)/sum(x$totseq))
 
 # So tag jump rates between 5 and 7 reads per 100,000 - nothing to be concerned about
@@ -1519,7 +1525,6 @@ library(iNEXT)
 load("Raw_data/CescPRdata_v2.RData") # - remove first # to load environment.. 
 
 ## Looking at rarefaction curves to assess sequencing coverage after removing small libraries > 10000 sequences
-
 tab <- R1phylo.plants.tax[[5]]
 ttab <- otu_table(tab)
 class(ttab) <- "matrix" 
