@@ -44,7 +44,7 @@ outfiles <- c( "stem-soil-40pt-data-lenient_10k-20241205.RDA",
                "stem-soil-40pt-data-repfilteredf1-20241205.RDA")
 
 ### Select data file to load (for testing)
-# data_selector <- 5
+# data_selector <- 1
 
 ### Select data file to load (for full loop)
 for(data_selector in seq_along(outfiles)){
