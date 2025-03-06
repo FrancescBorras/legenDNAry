@@ -1,6 +1,8 @@
 ### Work with extracted stem data
 
-data <- readRDS("Data/LFDP2023-extract-20240327.RDA")
+# data <- readRDS("Data/LFDP2023-extract-20240327.RDA")
+data <- readRDS("Raw_data/LFDP2023-extract-20240510.RDA")
+
 
 str(data)
 
