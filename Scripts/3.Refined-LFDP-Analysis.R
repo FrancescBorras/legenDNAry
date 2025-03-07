@@ -705,6 +705,14 @@ dev.off()
 
 }
 
+
+# Save confusion matrix
+saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
+             conf_stats_ses_list=conf_stats_ses_list), 
+        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250307.RDA"))
+
+
+
 plot(sapply(conf_stats_ses_list, function(x) median(x$`Balanced Accuracy`)))
 
 
