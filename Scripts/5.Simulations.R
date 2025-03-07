@@ -50,25 +50,25 @@ ses <- function(obs, rand){
 # drops <- rownames(lfdp23)[order(lfdp23$total_abund, decreasing=T)][1:5]
 
 ### Let's drop all gOTUs that make up the lower 25% of total cumulative basal area (69 species)
-lfdp23 <- lfdp23[order(lfdp23$total_ba, decreasing=F),]
-lfdp23$cumprop_ba <- round(cumsum(lfdp23$total_ba)/sum(lfdp23$total_ba), 3)
-drops <- rownames(lfdp23)[lfdp23$cumprop_ba < 0.25]
+# lfdp23 <- lfdp23[order(lfdp23$total_ba, decreasing=F),]
+# lfdp23$cumprop_ba <- round(cumsum(lfdp23$total_ba)/sum(lfdp23$total_ba), 3)
+# drops <- rownames(lfdp23)[lfdp23$cumprop_ba < 0.25]
 
 ### Let's drop the 5 most common gOTUs in terms of basal area
 # drops <- rownames(lfdp23)[order(lfdp23$total_ba, decreasing=T)][1:5]
 
 ### Let's not drop anything!
-# drops <- NULL
+drops <- NULL
 
 #####################
 ### Find gOTUS to add
 #####################
 
 ### Let's add the 5 most common gOTUs in terms of basal area to all samples
-adds <- rownames(lfdp23)[order(lfdp23$total_ba, decreasing=T)][1:5]
+# adds <- rownames(lfdp23)[order(lfdp23$total_ba, decreasing=T)][1:5]
 
 ### Let's not add anything!
-# adds <- NULL
+adds <- NULL
 
 
 #####################
@@ -93,7 +93,7 @@ conf_stats_obs_list <- list()
 conf_stats_ses_list <- list()
 
 # Loop through radii
-seq(5,100,5)[10]
+# seq(5,100,5)[10]
 
 for (r in 1:20) {
   message(paste('radius', r))
@@ -101,8 +101,8 @@ for (r in 1:20) {
   tmp.samp.abun.pa <- samp.abun.pa[[r]]
   
   # Initialize matrices to store observation and SES results
-  conf_stats_obs <- matrix(nrow = npts, ncol = 11)
-  conf_stats_ses <- matrix(nrow = npts, ncol = 11)
+  conf_stats_obs <- matrix(nrow = npts, ncol = 12)
+  conf_stats_ses <- matrix(nrow = npts, ncol = 12)
   
   # Loop through sites
   for (site in 1:npts) {
@@ -112,26 +112,39 @@ for (r in 1:20) {
 
     confus_obs[[site]] <- caret::confusionMatrix(table(+(!samp.dna.pa[site,]),
                                                  +(!tmp.samp.abun.pa[site,])))
-    
+
     # Loop through randomizations
     for (rand in 1:nrand){
       confus_rand[[rand]] <- caret::confusionMatrix(table(+(!samp.dna.pa[site,]),
                                                           +(!stem.23$abund[[r]][npts + rand,])))
-      
-    }
+      }
+    
     
     # Calculate SES
     conf_stats_ses[site,1:11] <- ses(confus_obs[[site]]$byClass,
                                      do.call(rbind, lapply(confus_rand, function(x) x$byClass)))
     
+    obs_mcc <- mltools::mcc(confusionM = matrix(confus_obs[[site]]$table, nrow=2))
+    
+    rand_mmc <- do.call(c, lapply(confus_rand, function(x)
+      mltools::mcc(confusionM = matrix(x$table, nrow=2)
+      )))
+    
+    conf_stats_ses[site,12] <- (obs_mcc - mean(rand_mmc))/(sd(rand_mmc))
+
   }
 
   conf_stats_obs[,1:11] <- do.call(rbind, lapply(confus_obs, function(x) x$byClass))
   
-  colnames(conf_stats_ses) <- names(confus_obs[[1]]$byClass)
+  conf_stats_obs[,12] <- do.call(rbind, lapply(confus_obs, function(x){
+    mltools::mcc(confusionM = matrix(x$table, nrow=2))
+  }))
+  
+  
+  colnames(conf_stats_ses) <- c(names(confus_obs[[1]]$byClass), "MCC")
   conf_stats_ses <- as.data.frame(conf_stats_ses)
 
-  colnames(conf_stats_obs) <- names(confus_obs[[1]]$byClass)
+  colnames(conf_stats_obs) <- c(names(confus_obs[[1]]$byClass), "MCC")
   conf_stats_obs <- as.data.frame(conf_stats_obs)
   
   conf_stats_obs_list[[r]] <- conf_stats_obs
@@ -146,10 +159,13 @@ for (r in 1:20) {
 
 saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
              conf_stats_ses_list=conf_stats_ses_list), 
-        file="Processed_data/Sim_output_5m-add5topgOTUsBA-droplower25pctBA-5to100m-20250305.RDA")
+        file="Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA")
 
 
 ###### Names of previous saved simulation output files ######
+
+## NO DROPS NOR ADDS (perfect sampling simulation)
+"Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA"
 
 ## DROPS simulations
 "Processed_data/Sim_output_25m-nodrops-20250305.RDA"
@@ -169,6 +185,9 @@ saveRDS(list(conf_stats_obs_list=conf_stats_obs_list,
 "Processed_data/Sim_output_5m-add5topgOTUsBA-droplower25pctBA-5to50m-20250305.RDA"
 "Processed_data/Sim_output_5m-add5topgOTUsBA-droplower25pctBA-5to100m-20250305.RDA"
 
+conf_stats_obs_list <- readRDS("Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA")[[1]]
+conf_stats_ses_list <- readRDS("Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA")[[2]]
+
 #####################
 ### Plot it!
 #####################
@@ -178,41 +197,44 @@ par(mfcol=c(3,2), mar=c(4,4,1,1))
 # cols <- rev(viridis::viridis(20))
 cols <- rev(viridis::viridis(length(conf_stats_obs_list)))
 
-boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), col=cols)
-boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), col=cols)
-boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`), col=cols)
+# "Observed" (raw simulated) values
+boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), col=cols,
+        ylab="Sensitivity", 
+        xlab="Radius (m)", axes=F, col=cols)
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
 
+boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
+        ylab="Specificity", 
+        xlab="Radius (m)", axes=F, col=cols)
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
 
+boxplot(lapply(conf_stats_obs_list, function(x) x$MCC,
+               ylab="Sensitivity", 
+               xlab="Radius (m)", axes=F, col=cols))
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+
+# SES values
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         ylab="Sensitivity (SES)", 
         xlab="Radius (m)", axes=F, col=cols)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
 polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         axes=F, col=cols, add=T)
-graphics::box()
-
-
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         ylab="Specificity (SES)", 
         xlab="Radius (m)", axes=F, col=cols)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
 polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         axes=F, col=cols, add=T)
-graphics::box()
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
 
-
-boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
-        ylab="Balanced Accuracy (SES)", 
+boxplot(lapply(conf_stats_ses_list, function(x) x$MCC), 
+        ylab="MCC (SES)", 
         xlab="Radius (m)", axes=F, col=cols)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
 polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
         axes=F, col=cols, add=T)
-graphics::box()
+axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
 

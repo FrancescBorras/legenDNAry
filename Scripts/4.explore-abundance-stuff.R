@@ -46,21 +46,21 @@ ta_prop <- colSums(ta)/npts
 
 par(mfrow=c(2,2), mar=c(4,4,1,1))
 
-plot(lfdp23$total_abund, fp_prop, log='x',
+plot(lfdp23$total_abund, tp_prop, log='',
      xlab="Total Abundance", ylab="Prop sites where FP @5m",
      pch=16)
 # If you want to add text labels to know which OTU is which:
-# text(lfdp23$total_abund, fp_prop, rownames(lfdp23), cex=0.75)
+ text(lfdp23$total_abund, tp_prop, rownames(lfdp23), cex=0.75)
 
-plot(lfdp23$total_abund, fa_prop, log='x',
+plot(lfdp23$total_abund, fa_prop, log='',
      xlab="Total Abundance", ylab="Prop sites where FA @5m",
      pch=16)
 
-plot(lfdp23$total_abund, fa_prop, log='x',
+plot(lfdp23$total_abund, fa_prop, log='',
      xlab="Total Abundance", ylab="Prop sites where TP @ 5m",
      pch=16)
 
-plot(lfdp23$total_abund, ta_prop, log='x',
+plot(lfdp23$total_abund, ta_prop, log='',
      xlab="Total Abundance", ylab="Prop sites where TA @5m",
      pch=16)
 
@@ -68,7 +68,7 @@ plot(lfdp23$total_abund, ta_prop, log='x',
 ### SAME BUT FOR TOTAL BASAL AREA
 par(mfrow=c(2,2), mar=c(4,4,1,1))
 
-plot(lfdp23$total_ba, fp_prop, log='x',
+plot(lfdp23$total_ba, tp_prop, log='x',
      xlab="Total Basal Area (m2)", ylab="Prop sites where FP @5m",
      pch=16)
 # If you want to add text labels to know which OTU is which:
@@ -87,7 +87,16 @@ plot(lfdp23$total_ba, ta_prop, log='x',
      pch=16)
 
 
+### LOOK AT TRUE PRESENCE IN 5M AND HOW THAT RELATES TO TP / FA ETC.
+par(mfrow=c(2,2), mar=c(4,4,1,1))
 
+pres <- colSums(stem.pa.list$`5`[1:npts,])
+
+plot(pres, colSums(tp), cex=sqrt(lfdp23$total_abund)/10)
+abline(0,1)
+
+plot(pres, colSums(fa), cex=sqrt(lfdp23$total_abund)/10)
+abline(0,1)
 
 
 
