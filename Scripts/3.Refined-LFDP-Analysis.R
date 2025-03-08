@@ -149,147 +149,6 @@ round(100 * (no_gotu_dna/no_gotu_stem), 1)
 (min100 <- min(rowSums(stem.23$abund[[20]]>0)[1:npts]))
 (max100 <- max(rowSums(stem.23$abund[[20]]>0)[1:npts]))
 
-
-##################
-### Figure 1 - there are a variety of plots below; need to decide which to include
-
-# pdf("Figures/Fig1.rank-abundance-plot.pdf")
-
-pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_", 
-           label[data_selector],
-           ".pdf"), width = 7, height = 6)
-
-
-par(mfrow=c(2,2), mar=c(4,4,1,1))
-
-# TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
-b <- boxplot(sapply(stem.23$abund, function(x) rowSums(x>0)[1:npts]), 
-             col=cp,
-             xlab="Radius (m)", 
-             ylab="Taxon richness", 
-             xlim=c(-0.5,20), ylim=c(0,no_gotu_stem))
-b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
-axis(1, at=-0.5, labels="DNA")
-abline(v=0.25)
-abline(h=no_gotu_stem, lty=2)
-mtext("A", adj=0.1, line=-2)
-
-# Full plot abundance
-plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
-     ylab="Rank abundance of DNA reads",
-     xlab="Rank abundance of stems", 
-     pch=21, bg='grey')
-mtext("B", adj=0.05, line=-1.5)
-
-# Rank stem abundance is significantly positively correlated with rank DNA read abundance
-(rankcor <- cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa))))
-rank_corr_est <- rankcor$estimate
-rank_corr_p <- rankcor$p.value
-
-
-plot(lfdp23$total_ba * 100,
-     (colSums(dnamat.pa)/npts), log='x',
-     ylab="Prop. of sites detected in DNA",
-     xlab="Total basal area (m^2) [log10]",
-     pch=21, bg='grey', ylim=c(0,1))
-mtext("C", adj=0.05, line=-1.5)
-
-# Total BA is significantly positively correlated with prop. of DNA samples where detected
-(bacor <- cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/npts))
-ba_corr_est <- bacor$estimate
-ba_corr_p <- bacor$p.value
-
-
-# plot(colSums(stem.23$abund[[20]][1:39,]>0),
-#      colSums(dnamat.pa),
-#      ylab="Sites detected in DNA",
-#      xlab="Sites detected in stem data",
-#      pch=21, bg='grey')
-
-# corres <- vector()
-# for(i in 1:20){
-#   corres[i] <- cor(colSums(stem.23$ba[[i]][1:39,]>0),
-#                    colSums(dnamat.pa))
-# }
-# abline(lm(colSums(dnamat.pa) ~ colSums(stem.23$ba[[20]])),
-#        col='blue', lwd=2)
-
-
-### Logistic regression with distance to nearest tree and detection
-y <- as.vector(dnamat.pa[1:npts,])
-x <- log10(as.vector(unlist(stem.23$nn[1:npts,])))
-
-plot(x, jitter(y, 0.1), pch=16, cex=0.75, col=rgb(0,0,0,0.05),
-     ylab="Presence in DNA",
-     xlab="Dist. to nearest tree (m)", #[log10]", 
-     xlim=c(0,3), cex.lab=1.25, 
-     axes=F)
-axis(1, c(0,1,2,3), labels=c(1, 10, 100,1000))
-axis(2)
-box()
-
-mod <- glm(as.vector(dnamat.pa) ~ x, family="binomial")
-nd <- data.frame(x=seq(0, max(x), length.out=100))
-ypred <- predict(mod, nd, type='response')
-# 
-# # Overall fit
-lines(nd$x, ypred, col="blue", lwd=3)
-# 
-# gOTU-specific fits
-coeffs <- vector()
-for(sp in 1:ncol(stem.23$nn)){
-  xx <- log(unlist(stem.23$nn[1:npts,sp]))
-  yy <- unlist(as.data.frame(1*(dnamat[,sp]>1)))
-  mod <- glm(yy ~ xx, family=binomial)
-  coeffs[sp] <- coef(mod)[2]
-  nd <- data.frame(xx=seq(0, max(x), length.out=100))
-  ypred <- predict(mod, nd, type='response')
-  lines(nd$xx, ypred, col=rgb(0,0,0,0.2), lwd=0.5)
-  #col=ifelse(coeffs[sp]>0, rgb(1,0,0,0.4), rgb(0,0,1,0.4)))
-}
-mtext("D", adj=0.05, line=-1.5)
-
-log_p <- summary(mod)$coefficients["xx","Pr(>|z|)"]
-
-# plot(lfdp23$total_abund,
-#      jitter(1*(colSums(dnamat.pa)>0), 0.1), log='x',
-#      xlim=c(1,10000),
-#      ylab="Detected in DNA",
-#      xlab="Total number of stems",
-#      pch=21, bg='grey')
-# mtext("C", adj=0.05, line=-1.5)
-# 
-# # Add logistic prediction
-# nd <- data.frame(a=seq(log10(min(lfdp23$total_abund)),
-#                        log10(max(lfdp23$total_abund)),
-#                        length.out=1000))
-# ypred <- predict(m1, newdata=nd, type="response")
-# lines(10^(nd$a), ypred, col='blue', lwd=2)
-# 
-# lfdp23$eDNA <- 1*(colSums(dnamat.pa)>0)
-# lfdp23[order(lfdp23$eDNA, lfdp23$total_abund),]
-
-
-
-### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
-# plot(specaccum(dnamat.pa),
-#      xlab="Number of samples",
-#      ylab="Taxon richness",
-#      ylim=c(0,79))
-# abline(h=no_gotu_stem, lty=2)
-# mtext("D", adj=0.05, line=-2)
-
-### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
-# df <- data.frame(sapply(out, "length<-", max(lengths(out))))
-# colnames(df) <- seq(5,100,5)
-# boxplot(df, col=rev(viridis(ncol(df))), 
-#         xlab="Aggregating Distance (m)", 
-#         ylab="Taxon richness",
-#         ylim=c(0, no_gotu_stem))
-# abline(h=no_gotu_stem, lty=2)
-
-dev.off()
-
 plot_level_summary_table[data_selector,] <- c(label[data_selector],
                                               npts,
                                               no_gotu_dna,
@@ -365,40 +224,184 @@ for(r in seq_along(stem.23$abund)){
 #                          renyi(stem.23$abund[[r]][1:39,], hill = T, scales=2))
 # }
 
-### Figure 2
-# pdf("Figures/Fig2.Richness-correlations.pdf", width = 9, height = 4)
+##################
+### Figure 1 - there are a variety of plots below; need to decide which to include
 
-pdf(paste0("Figures/compare_filtering/Fig2.Richness-correlations_", 
-    label[data_selector],
-    ".pdf"), width = 9, height = 4)
+cp <- rev(viridis::viridis(20))
 
-par(mfrow=c(1,2))
+cpsp <- viridis::viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_abund), 20)]
 
-plot(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate), 
-     ylim=c(-1,1), axes=F,
-     pch=21, bg=cp, xlab="Radius (m)",
-     ylab="Pearson correlation",
-     main="Stem vs. DNA richness (raw)")
-segments(seq_along(stem.23$abund), y0=sapply(corrs, function(x) x$conf.int[1]),
-         y1=sapply(corrs, function(x) x$conf.int[2]))
-abline(h=0, lty=2)
-points(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate), 
-       pch=21, bg=cp)
-axis(1, labels=seq(5, 100, 5), at=1:20)
+# pdf("Figures/Fig1.rank-abundance-plot.pdf")
+
+pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_", 
+           label[data_selector],
+           ".pdf"), width = 7, height = 6)
+
+
+par(mfrow=c(3,2), mar=c(4,4,1,1))
+
+# TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
+b <- boxplot(sapply(stem.23$abund, function(x) rowSums(x>0)[1:npts]), 
+             col=cp,
+             xlab="Radius (m)", 
+             ylab="Taxon richness", 
+             xlim=c(-0.5,20), ylim=c(0,no_gotu_stem))
+b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
+axis(1, at=-0.5, labels="DNA")
+abline(v=0.25)
+abline(h=no_gotu_stem, lty=2)
+mtext("A", adj=0.1, line=-2)
+
+# Full plot abundance
+plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
+     ylab="Rank abundance of DNA reads",
+     xlab="Rank abundance of stems", 
+     pch=21, cex=1.5, bg=cpsp)
+mtext("B", adj=0.05, line=-1.5)
+
+# Rank stem abundance is significantly positively correlated with rank DNA read abundance
+(rankcor <- cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa))))
+rank_corr_est <- rankcor$estimate
+rank_corr_p <- rankcor$p.value
+
+plot(lfdp23$total_ba * 100,
+     (colSums(dnamat.pa)/npts), log='x',
+     ylab="Prop. of sites detected in DNA",
+     xlab=bquote(log[10] ~ "Total basal area" ~ (m^2)),
+     pch=21, bg=cpsp, ylim=c(0,1), cex=1.5)
+mtext("C", adj=0.05, line=-1.5)
+
+# Total BA is significantly positively correlated with prop. of DNA samples where detected
+(bacor <- cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/npts))
+ba_corr_est <- bacor$estimate
+ba_corr_p <- bacor$p.value
+
+
+# plot(colSums(stem.23$abund[[20]][1:39,]>0),
+#      colSums(dnamat.pa),
+#      ylab="Sites detected in DNA",
+#      xlab="Sites detected in stem data",
+#      pch=21, bg='grey')
+
+# corres <- vector()
+# for(i in 1:20){
+#   corres[i] <- cor(colSums(stem.23$ba[[i]][1:39,]>0),
+#                    colSums(dnamat.pa))
+# }
+# abline(lm(colSums(dnamat.pa) ~ colSums(stem.23$ba[[20]])),
+#        col='blue', lwd=2)
+
+
+### Logistic regression with distance to nearest tree and detection
+y <- as.vector(dnamat.pa[1:npts,])
+x <- log10(as.vector(unlist(stem.23$nn[1:npts,])))
+
+plot(x, jitter(y, 0.1), pch=16, cex=0.75, col=rgb(0,0,0,0.05),
+     ylab="Presence in DNA",
+     xlab="Dist. to nearest tree (m)", #[log10]", 
+     xlim=c(0,3), cex.lab=1.25, 
+     axes=F)
+axis(1, c(0,1,2,3), labels=c(1, 10, 100,1000))
 axis(2)
+box()
+
+mod <- glm(as.vector(dnamat.pa) ~ x, family="binomial")
+nd <- data.frame(x=seq(0, max(x), length.out=100))
+ypred <- predict(mod, nd, type='response')
+# 
+# # Overall fit
+lines(nd$x, ypred, col="blue", lwd=3)
+# 
+# gOTU-specific fits
+coeffs <- vector()
+for(sp in 1:ncol(stem.23$nn)){
+  xx <- log(unlist(stem.23$nn[1:npts,sp]))
+  yy <- unlist(as.data.frame(1*(dnamat[,sp]>1)))
+  mod <- glm(yy ~ xx, family=binomial)
+  coeffs[sp] <- coef(mod)[2]
+  nd <- data.frame(xx=seq(0, max(x), length.out=100))
+  ypred <- predict(mod, nd, type='response')
+  lines(nd$xx, ypred, 
+        # col=scales::alpha(cpsp[sp], 0.5),
+        col=rgb(0,0,0,0.2),
+        lwd=0.5)
+  #col=ifelse(coeffs[sp]>0, rgb(1,0,0,0.4), rgb(0,0,1,0.4)))
+}
+mtext("D", adj=0.05, line=-1.5)
+
+log_p <- summary(mod)$coefficients["xx","Pr(>|z|)"]
+
+# plot(lfdp23$total_abund,
+#      jitter(1*(colSums(dnamat.pa)>0), 0.1), log='x',
+#      xlim=c(1,10000),
+#      ylab="Detected in DNA",
+#      xlab="Total number of stems",
+#      pch=21, bg='grey')
+# mtext("C", adj=0.05, line=-1.5)
+# 
+# # Add logistic prediction
+# nd <- data.frame(a=seq(log10(min(lfdp23$total_abund)),
+#                        log10(max(lfdp23$total_abund)),
+#                        length.out=1000))
+# ypred <- predict(m1, newdata=nd, type="response")
+# lines(10^(nd$a), ypred, col='blue', lwd=2)
+# 
+# lfdp23$eDNA <- 1*(colSums(dnamat.pa)>0)
+# lfdp23[order(lfdp23$eDNA, lfdp23$total_abund),]
+
+### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES RANDOMLY
+# plot(specaccum(dnamat.pa),
+#      xlab="Number of samples",
+#      ylab="Taxon richness",
+#      ylim=c(0,79))
+# abline(h=no_gotu_stem, lty=2)
+# mtext("D", adj=0.05, line=-2)
+
+### TAXON ACCUMULATION CURVE WHEN YOU AGGREGATE DNA SAMPLES SPATIALLY
+# df <- data.frame(sapply(out, "length<-", max(lengths(out))))
+# colnames(df) <- seq(5,100,5)
+# boxplot(df, col=rev(viridis(ncol(df))), 
+#         xlab="Aggregating Distance (m)", 
+#         ylab="Taxon richness",
+#         ylim=c(0, no_gotu_stem))
+# abline(h=no_gotu_stem, lty=2)
+
+# dev.off()
+
+# pdf(paste0("Figures/compare_filtering/Fig2.Richness-correlations_", 
+#     label[data_selector],
+#     ".pdf"), width = 9, height = 4)
+
+# par(mfrow=c(1,2))
+
+# plot(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate),
+#      ylim=c(-1,1), axes=F,
+#      pch=21, bg=cp, xlab="Radius (m)",
+#      ylab="Pearson correlation",
+#      main="Stem vs. DNA richness (raw)")
+# segments(seq_along(stem.23$abund), y0=sapply(corrs, function(x) x$conf.int[1]),
+#          y1=sapply(corrs, function(x) x$conf.int[2]))
+# abline(h=0, lty=2)
+# points(seq_along(stem.23$abund), sapply(corrs, function(x) x$estimate),
+#        pch=21, bg=cp)
+# axis(1, labels=seq(5, 100, 5), at=1:20)
+# axis(2)
 
 plot(seq_along(stem.23$abund), sapply(corrs_rare, function(x) x$estimate), 
      ylim=c(-1,1), axes=F,
      pch=21, bg='grey', xlab="Radius (m)",
      ylab="Pearson correlation",
-     main="Stem vs. DNA richness (rarefied)")
+     # main="Stem vs. DNA richness (rarefied)"
+     )
 segments(seq_along(stem.23$abund), y0=sapply(corrs_rare, function(x) x$conf.int[1]),
          y1=sapply(corrs_rare, function(x) x$conf.int[2]))
 abline(h=0, lty=2)
 points(seq_along(stem.23$abund), sapply(corrs_rare, function(x) x$estimate), 
-       pch=21, bg=cp)
+       pch=21, bg=cp, cex=2)
 axis(1, labels=seq(5, 100, 5), at=1:20)
 axis(2)
+mtext("E", adj=0.05, line=-1.5)
+
 
 dev.off()
 
@@ -713,11 +716,17 @@ saveRDS(list(conf_stats_obs_list=conf_stats_obs_list,
 
 
 
-plot(sapply(conf_stats_ses_list, function(x) median(x$`Balanced Accuracy`)))
+g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250307.RDA")[[1]]
+g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250307.RDA")[[2]]
+
+conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[1]]
+conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[2]]
 
 
-plot(do.call(c, lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`)),
-     do.call(c, lapply(conf_stats_ses_list, function(x) x$`MCC`)))
+
+
+
+
 
 ### Explore the plots where SES Balanced Accuracy is higher than expected
 

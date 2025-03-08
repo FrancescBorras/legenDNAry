@@ -76,7 +76,7 @@ adds <- NULL
 #####################
 
 # Choose the DNA community (100% match with the 5m census)
-samp.dna.pa <- samp.abun.pa$`5`
+samp.dna.pa <- samp.abun.pa$`30`
 
 # Impose undetected species (drops from above)
 samp.dna.pa[,drops] <- samp.dna.pa[,drops] * 0
@@ -159,13 +159,14 @@ for (r in 1:20) {
 
 saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
              conf_stats_ses_list=conf_stats_ses_list), 
-        file="Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA")
+        file="Processed_data/Sim_output_30meDNA-5to100m-20250307.RDA")
 
 
 ###### Names of previous saved simulation output files ######
 
 ## NO DROPS NOR ADDS (perfect sampling simulation)
-"Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA"
+"Processed_data/Sim_output_5meDNA-5to100m-20250307.RDA" # Match to 5 m community
+"Processed_data/Sim_output_30meDNA-5to100m-20250307.RDA" # Match to 30 m community
 
 ## DROPS simulations
 "Processed_data/Sim_output_25m-nodrops-20250305.RDA"
@@ -198,20 +199,26 @@ par(mfcol=c(3,2), mar=c(4,4,1,1))
 cols <- rev(viridis::viridis(length(conf_stats_obs_list)))
 
 # "Observed" (raw simulated) values
-boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), col=cols,
+boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity),
         ylab="Sensitivity", 
         xlab="Radius (m)", axes=F, col=cols)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+mtext("A", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
 
 boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
         ylab="Specificity", 
         xlab="Radius (m)", axes=F, col=cols)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+mtext("B", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
 
-boxplot(lapply(conf_stats_obs_list, function(x) x$MCC,
-               ylab="Sensitivity", 
-               xlab="Radius (m)", axes=F, col=cols))
+boxplot(lapply(conf_stats_obs_list, function(x) x$MCC),
+               ylab="MCC", 
+               xlab="Radius (m)", axes=F, col=cols)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+mtext("C", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
 
 # SES values
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
@@ -221,6 +228,8 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
         axes=F, col=cols, add=T)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+mtext("D", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         ylab="Specificity (SES)", 
@@ -229,12 +238,15 @@ polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
 boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
         axes=F, col=cols, add=T)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
+mtext("E", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
 
 boxplot(lapply(conf_stats_ses_list, function(x) x$MCC), 
         ylab="MCC (SES)", 
         xlab="Radius (m)", axes=F, col=cols)
 polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
+boxplot(lapply(conf_stats_ses_list, function(x) x$MCC), 
         axes=F, col=cols, add=T)
 axis(1, labels=names(stem.23$abund), at=1:20); axis(2); graphics::box()
-
+mtext("F", adj=0, line=0.5)
+abline(v=1, col='red', lwd=2, lty=2)
