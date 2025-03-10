@@ -73,13 +73,13 @@ mtext("D", adj=0, line=0.5)
 ### LOOK AT TRUE PRESENCE IN 5M AND HOW THAT RELATES TO TP / FA ETC.
 pres <- colSums(stem.pa.list$`5`[1:npts,])
 
-plot(pres/npts, colSums(tp)/npts, cex=sqrt(lfdp23$total_abund)/30,
+plot(colSums(tp)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
      pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
      ylab="Prop sites present @5m", xlab="Prop sites where TP @5m")
 abline(0,1, lty=2)
 mtext("E", adj=0, line=0.5)
 
-plot(pres/npts, colSums(fa)/npts, cex=sqrt(lfdp23$total_abund)/30,
+plot(colSums(fa)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
      pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
      ylab="Prop sites present @5m", xlab="Prop sites where FA @5m")
 abline(0,1, lty=2)

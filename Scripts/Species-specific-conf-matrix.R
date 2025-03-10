@@ -26,9 +26,6 @@ samp.abun.pa <- lapply(stem.23$abund, function(x){ 1 * (x[1:npts,] > 0)})
 
 ### gOTU full plot summaries
 lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
-lfdp23 <- lfdp23[order(lfdp23$total_abund, decreasing=F),]
-lfdp23$cumprop <- round(cumsum(lfdp23$total_abund)/sum(lfdp23$total_abund), 3)
-lfdp23$cumprop_ba <- round(cumsum(lfdp23$total_ba)/sum(lfdp23$total_ba), 3)
 
 #####################
 ### Helper function
@@ -46,7 +43,7 @@ ses <- function(obs, rand){
 sp_conf_stats_obs_list <- list()
 sp_conf_stats_ses_list <- list()
 
-for (r in 1:20) {
+for (r in 1) { #20) {
   message(paste('radius', r))
   # Subset the stem and dna communities to the focal radius
   tmp.samp.abun.pa <- samp.abun.pa[[r]]
@@ -57,7 +54,8 @@ for (r in 1:20) {
   
   # Loop through sites
   for (sp in 1:nsp) {
-    message(paste('-species', sp))
+    message(paste('= species', sp))
+    
     # Initialize a results holder
     if(sp == 1) { confus_rand <- confus_obs <- list() }
     
@@ -67,79 +65,107 @@ for (r in 1:20) {
                                                               levels=c(0,1))))
     
     # Loop through randomizations
-    # for (rand in 1:nrand){
-    #   confus_rand[[rand]] <- caret::confusionMatrix(table(+(!samp.dna.pa[,sp]),
-    #                                                       +(!stem.23$abund[[r]][npts + rand,sp])))
-    # }
-    # 
-    
+    for (rand in 1:999){
+      
+      # Shuffle species across sites
+      confus_rand[[rand]] <- caret::confusionMatrix(table(factor(+(!samp.dna.pa[,sample(1:nsp, 1)]), 
+                                                                 levels=c(0,1)),
+                                                          factor(+(!tmp.samp.abun.pa[,sp]), 
+                                                                 levels=c(0,1))))
+
+      # Within species shuffle
+    #   confus_rand[[rand]] <- caret::confusionMatrix(table(factor(sample(+(!samp.dna.pa[,sp])),
+    #                                                              levels=c(0,1)),
+    #                                                       factor(+(!tmp.samp.abun.pa[,sp]), 
+    #                                                              levels=c(0,1))))
+    }
+
     # Calculate SES
-    # conf_stats_ses[site,1:11] <- ses(confus_obs[[site]]$byClass,
-    #                                  do.call(rbind, lapply(confus_rand, function(x) x$byClass)))
+    conf_stats_ses[sp,1:11] <- ses(confus_obs[[sp]]$byClass,
+                                     do.call(rbind, lapply(confus_rand, function(x) x$byClass)))
     
     obs_mcc <- mltools::mcc(confusionM = matrix(confus_obs[[sp]]$table, nrow=2))
     
-    # rand_mmc <- do.call(c, lapply(confus_rand, function(x)
-    #   mltools::mcc(confusionM = matrix(x$table, nrow=2)
-    #   )))
-    
-    # conf_stats_ses[site,12] <- (obs_mcc - mean(rand_mmc))/(sd(rand_mmc))
-    
+    rand_mmc <- do.call(c, lapply(confus_rand, function(x)
+                            mltools::mcc(confusionM = matrix(x$table, nrow=2))))
+
+    conf_stats_ses[sp,12] <- (obs_mcc - mean(rand_mmc))/(sd(rand_mmc))
   }
   
   conf_stats_obs[,1:11] <- do.call(rbind, lapply(confus_obs, function(x) x$byClass))
   
-  conf_stats_obs[,12] <- do.call(rbind, lapply(confus_obs, function(x){
-    mltools::mcc(confusionM = matrix(x$table, nrow=2))
-  }))
+  conf_stats_obs[,12] <- do.call(rbind, lapply(confus_obs, function(x)
+                            mltools::mcc(confusionM = matrix(x$table, nrow=2))
+                            ))
   
-  
-  # colnames(conf_stats_ses) <- c(names(confus_obs[[1]]$byClass), "MCC")
-  # conf_stats_ses <- as.data.frame(conf_stats_ses)
-  
+  colnames(conf_stats_ses) <- c(names(confus_obs[[1]]$byClass), "MCC")
+  conf_stats_ses <- as.data.frame(conf_stats_ses)
+
   colnames(conf_stats_obs) <- c(names(confus_obs[[1]]$byClass), "MCC")
   conf_stats_obs <- as.data.frame(conf_stats_obs)
   
   sp_conf_stats_obs_list[[r]] <- conf_stats_obs
-  # sp_conf_stats_ses_list[[r]] <- conf_stats_ses
-  
+  sp_conf_stats_ses_list[[r]] <- conf_stats_ses
 }
 
 
-
+# Make colors to be relative to log basal area (x-axis is log abundance)
 cp <- (viridis::viridis_pal(option = "A")(78))
 
-x <- do.call(cbind, lapply(sp_conf_stats_obs_list, function(x) x$`Balanced Accuracy`))
+# Get a simple vector of total abundance in same order as 
 
-plot(seq(5,100,5), x[1,], type='l', ylim=c(0,1), col=cp[sp],
-     xlab="Scale (m)", ylab="Sensitivity")
-for(sp in 2:78) {
-  lines(seq(5,100,5), x[sp,], type='l', col=cp[sp])
-}
+lfdp23 <- lfdp23[match(colnames(samp.dna.pa), rownames(lfdp23)),]
+
+cpsp <- cp[round(rank(lfdp23$total_abund))]
 
 
-hist(x[,1], breaks=20)
-abline(v=0.5, col='blue', lwd=3)
+par(mfcol=c(3,2), mar=c(4,4,2,1))
 
-
-a <- lfdp23$total_abund[match(colnames(samp.dna.pa), rownames(lfdp23))]
-cp <- cp[match(colnames(samp.dna.pa), rownames(lfdp23))]
-
-
-par(mfrow=c(2,2), mar=c(4,4,1,1))
 x <- do.call(cbind, lapply(sp_conf_stats_obs_list, function(x) x$Sensitivity))
-plot(a, x[,1], log='x', pch=21, bg=cp, 
+plot(lfdp23$total_abund, x[,1], log='x', 
+     pch=21, bg=cpsp, cex=2,
      xlab="Total abundance", ylab="Sensitivity")
+mtext("A", adj=0, line=0.5)
+
 x <- do.call(cbind, lapply(sp_conf_stats_obs_list, function(x) x$Specificity))
-plot(a, x[,1], log='x', pch=21, bg=cp,
+plot(lfdp23$total_abund, x[,1], log='x', 
+     pch=21, bg=cpsp, cex=2,
      xlab="Total abundance", ylab="Specificity")
-x <- do.call(cbind, lapply(sp_conf_stats_obs_list, function(x) x$`Balanced Accuracy`))
-plot(a, x[,1], log='x', pch=21, bg=cp,
-     xlab="Total abundance", ylab="Balanced Accuracy")
+mtext("B", adj=0, line=0.5)
+
+x <- do.call(cbind, lapply(sp_conf_stats_obs_list, function(x) x$MCC))
+plot(lfdp23$total_abund, x[,1], log='x', 
+     pch=21, bg=cpsp, cex=2, 
+     xlab="Total abundance", ylab="MCC")
+mtext("C", adj=0, line=0.5)
 
 
+x <- do.call(cbind, lapply(sp_conf_stats_ses_list, function(x) x$Sensitivity))
 
+plot(lfdp23$total_abund, x[,1], log='x', pch=NA, bg=cp, 
+     xlab="Total abundance", ylab="SES Sensitivity")
+polygon(x=c(1e-6,5e5,5e5,1e-6), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+points(lfdp23$total_abund, x[,1], 
+       pch=21, bg=cpsp, cex=2)
+mtext("D", adj=0, line=0.5)
 
+x <- do.call(cbind, lapply(sp_conf_stats_ses_list, function(x) x$Specificity))
+
+plot(a, x[,1], log='x', pch=NA, bg=cp, 
+     xlab="Total abundance", ylab="SES Specificity")
+polygon(x=c(1e-6,5e5,5e5,1e-6), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+points(lfdp23$total_abund, x[,1], log='x', 
+       pch=21, bg=cpsp, cex=2)
+mtext("E", adj=0, line=0.5)
+
+x <- do.call(cbind, lapply(sp_conf_stats_ses_list, function(x) x$MCC))
+
+plot(a, x[,1], log='x', pch=NA, bg=cp, 
+     xlab="Total abundance", ylab="SES MCC")
+polygon(x=c(1e-6,5e5,5e5,1e-6), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+points(lfdp23$total_abund, x[,1], log='x', 
+       pch=21, bg=cpsp, cex=2)
+mtext("F", adj=0, line=0.5)
 
 
 
