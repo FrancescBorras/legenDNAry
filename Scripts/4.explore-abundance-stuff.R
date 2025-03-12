@@ -44,70 +44,102 @@ ta_prop <- colSums(ta)/npts
 
 ### Plot!
 
-par(mfcol=c(2,3), mar=c(4,4,1,1))
+par(mfcol=c(2,2), mar=c(4,4,1,1))
 
-cp <- viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_ba+0.0001), 20)]
+cp <- viridis_pal(option = "A")(20)[cut(log10((16*lfdp23$total_ba)+0.0001), 20)]
 
 plot(lfdp23$total_abund, tp_prop, log='x',
      xlab="Total Abundance", ylab="Prop sites where TP @5m",
-     pch=21, bg=cp, lwd=0.5, ylim=c(0,1))
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
 # If you want to add text labels to know which OTU is which:
  # text(lfdp23$total_abund, tp_prop, rownames(lfdp23), cex=0.75)
 mtext("A", adj=0, line=0.5)
 
-plot(lfdp23$total_abund, fa_prop, log='x',
-     xlab="Total Abundance", ylab="Prop sites where FA @5m",
-     pch=21, bg=cp, lwd=0.5, ylim=c(0,1))
+legend_image <- as.raster(matrix(rev(viridis_pal(option = "A")(50)), ncol=1))
+rasterImage(legend_image, 1, 0.5, 2, 0.95)                       ## the gradient
+polygon(x=c(1,2,2,1), y=c(0.5,0.5,0.95,0.95))
+text(2, 0.925, "High BA", adj=-0.1, cex=0.75)
+text(2, 0.525, "Low BA", adj=-0.1, cex=0.75)
+
+plot(lfdp23$total_abund, ta_prop, log='x',
+     xlab="Total Abundance", ylab="Prop sites where TA @5m",
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
 mtext("B", adj=0, line=0.5)
 
 plot(lfdp23$total_abund, fp_prop, log='x',
      xlab="Total Abundance", ylab="Prop sites where FP @ 5m",
-     pch=21, bg=cp, lwd=0.5, ylim=c(0,1))
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
 mtext("C", adj=0, line=0.5)
 
-plot(lfdp23$total_abund, ta_prop, log='x',
-     xlab="Total Abundance", ylab="Prop sites where TA @5m",
-     pch=21, bg=cp, lwd=0.5, ylim=c(0,1))
+plot(lfdp23$total_abund, fa_prop, log='x',
+     xlab="Total Abundance", ylab="Prop sites where FA @5m",
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
 mtext("D", adj=0, line=0.5)
 
+
+
 ### LOOK AT TRUE PRESENCE IN 5M AND HOW THAT RELATES TO TP / FA ETC.
-pres <- colSums(stem.pa.list$`5`[1:npts,])
-
-plot(colSums(tp)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
-     pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
-     ylab="Prop sites present @5m", xlab="Prop sites where TP @5m")
-abline(0,1, lty=2)
-mtext("E", adj=0, line=0.5)
-
-plot(colSums(fa)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
-     pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
-     ylab="Prop sites present @5m", xlab="Prop sites where FA @5m")
-abline(0,1, lty=2)
-mtext("F", adj=0, line=0.5)
-
-mean(rowSums(stem.pa.list$`25`[1:npts,]))
+# pres <- colSums(stem.pa.list$`5`[1:npts,])
+# 
+# plot(colSums(tp)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
+#      pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
+#      ylab="Prop sites present @5m", xlab="Prop sites where TP @5m")
+# abline(0,1, lty=2)
+# mtext("E", adj=0, line=0.5)
+# 
+# plot(colSums(fa)/npts, pres/npts, cex=sqrt(lfdp23$total_abund)/30,
+#      pch=21, bg=cp, lwd=0.5, xlim=c(0,1), ylim=c(0,1),
+#      ylab="Prop sites present @5m", xlab="Prop sites where FA @5m")
+# abline(0,1, lty=2)
+# mtext("F", adj=0, line=0.5)
+# 
+# mean(rowSums(stem.pa.list$`25`[1:npts,]))
 
 
 
 
 ### SAME BUT FOR TOTAL BASAL AREA
-par(mfrow=c(3,2), mar=c(4,4,1,1))
+par(mfrow=c(2,2), mar=c(4,4,1,1))
+
+cp <- viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_abund), 20)]
+
+# Identify values for legend (low, mid, high)
+legend_values <- round(exp(quantile(log(lfdp23$total_abund), probs = c(0.01, 0.25, 0.5, 0.75, 0.99))))
+legend_levels <- round(quantile(1:20, c(0.01, 0.25, 0.5, 0.75, 0.99)))
+legend_colors <- viridis_pal(option = "A")(20)[legend_levels]
 
 plot(lfdp23$total_ba, tp_prop, log='x',
-     xlab="Total Basal Area (m2)", ylab="Prop sites where FP @5m",
-     pch=16)
+     xlab="Total Basal Area (m2)", ylab="Prop sites where TP @5m",
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
 # If you want to add text labels to know which OTU is which:
 # text(lfdp23$total_abund, fp_prop, rownames(lfdp23), cex=0.75)
+mtext("A", adj=0, line=0.5)
+
+# Add legend
+legend("topleft", 
+       legend=legend_values, 
+       pt.bg=legend_colors, 
+       pch=21, bty='n', pt.cex=1.5,
+       title='Abundance', inset=0.05)
 
 plot(lfdp23$total_ba, fa_prop, log='x',
      xlab="Total Basal Area (m2)", ylab="Prop sites where FA @5m",
-     pch=16)
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
+mtext("B", adj=0, line=0.5)
 
-plot(lfdp23$total_ba, fa_prop, log='x',
-     xlab="Total Basal Area (m2)", ylab="Prop sites where TP @ 5m",
-     pch=16)
+plot(lfdp23$total_ba, fp_prop, log='x',
+     xlab="Total Basal Area (m2)", ylab="Prop sites where FP @ 5m",
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
+mtext("C", adj=0, line=0.5)
 
 plot(lfdp23$total_ba, ta_prop, log='x',
      xlab="Total Basal Area (m2)", ylab="Prop sites where TA @5m",
-     pch=16)
+     pch=21, bg=cp, ylim=c(0,1), cex=1.5)
+mtext("D", adj=0, line=0.5)
+
+
+
+
+
+
 
