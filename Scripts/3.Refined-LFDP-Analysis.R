@@ -97,75 +97,6 @@ length(gotu_in)/nrow(lfdp23)
 ########################################################
 ########################################################
 ##################
-### SUMMARY DATA AT WHOLE PLOT LEVEL
-##################
-########################################################
-########################################################
-
-message(paste("Doing plot-level summary, Fig. 1"))
-
-### Initiate a table to hold plot-level summary stats
-if(data_selector==1){
-plot_level_summary_table <- data.frame(dataset=NA,
-                                       npts=NA,
-                                       no_gotu_dna=NA,
-                                       no_gotu_stem=NA,
-                                       mdna=NA, sddna=NA, mindna=NA, maxdna=NA,
-                                       m5=NA, sd5=NA, min5=NA, max5=NA,
-                                       m100=NA, sd100=NA, min100=NA, max100=NA,
-                                       rank_corr_est=NA, rank_corr_p=NA,
-                                       ba_corr_est=NA, ba_corr_p=NA,
-                                       log_p=NA)
-}
-
-# Total number of gOTUs in the DNA data
-(no_gotu_dna <- sum(colSums(dnamat.pa)>0))
-
-# Total gOTUs in the stem data:
-(no_gotu_stem <- sum(lfdp23$total_abund>0))
-
-### Percent of gOTUs from stem data that are detected in DNA data
-round(100 * (no_gotu_dna/no_gotu_stem), 1)
-
-### Mean and SD of taxon richness in eDNA data
-(mdna <- mean(rowSums(dnamat.pa)))
-(sddna <- sd(rowSums(dnamat.pa)))
-(mindna <- min(rowSums(dnamat.pa)))
-(maxdna <- max(rowSums(dnamat.pa)))
-
-### Mean and SD of taxon richness in stem data at 5 m
-(m5 <- mean(rowSums(stem.23$abund[[1]]>0)[1:npts]))
-(sd5 <- sd(rowSums(stem.23$abund[[1]]>0)[1:npts]))
-(min5 <- min(rowSums(stem.23$abund[[1]]>0)[1:npts]))
-(max5 <- max(rowSums(stem.23$abund[[1]]>0)[1:npts]))
-
-### Mean and SD of taxon richness in stem data at 100 m
-(m100 <- mean(rowSums(stem.23$abund[[20]]>0)[1:npts]))
-(sd100 <- sd(rowSums(stem.23$abund[[20]]>0)[1:npts]))
-(min100 <- min(rowSums(stem.23$abund[[20]]>0)[1:npts]))
-(max100 <- max(rowSums(stem.23$abund[[20]]>0)[1:npts]))
-
-plot_level_summary_table[data_selector,] <- c(label[data_selector],
-                                              npts,
-                                              no_gotu_dna,
-                                              no_gotu_stem,
-                                              mdna, sddna, mindna, maxdna,
-                                              m5, sd5, min5, max5,
-                                              m100, sd100, min100, max100,
-                                              rank_corr_est, rank_corr_p,
-                                              ba_corr_est, ba_corr_p,
-                                              log_p)
-
-plot_level_summary_table[,-1] <- round(apply(plot_level_summary_table[,-1], 2, as.numeric), 3)
-
-if(data_selector==length(outfiles)){
-  write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.names = F)
-}
-
-
-########################################################
-########################################################
-##################
 ### 40 Point Analysis
 ##################
 ########################################################
@@ -278,7 +209,7 @@ axis(2)
 box()
 
 mod <- glm(as.vector(dnamat.pa) ~ x, family="binomial")
-(summary(mod)$coefficients["x","Pr(>|z|)"])
+log_p <- (summary(mod)$coefficients["x","Pr(>|z|)"])
 nd <- data.frame(x=seq(0, max(x), length.out=100))
 ypred <- predict(mod, nd, type='response')
 # 
@@ -376,6 +307,75 @@ mtext("E", adj=0, line=0.1)
 
 
 dev.off()
+
+
+########################################################
+########################################################
+##################
+### SUMMARY DATA AT WHOLE PLOT LEVEL
+##################
+########################################################
+########################################################
+
+message(paste("Doing plot-level summary, Fig. 1"))
+
+### Initiate a table to hold plot-level summary stats
+if(data_selector==1){
+  plot_level_summary_table <- data.frame(dataset=NA,
+                                         npts=NA,
+                                         no_gotu_dna=NA,
+                                         no_gotu_stem=NA,
+                                         mdna=NA, sddna=NA, mindna=NA, maxdna=NA,
+                                         m5=NA, sd5=NA, min5=NA, max5=NA,
+                                         m100=NA, sd100=NA, min100=NA, max100=NA,
+                                         rank_corr_est=NA, rank_corr_p=NA,
+                                         ba_corr_est=NA, ba_corr_p=NA,
+                                         log_p=NA)
+}
+
+# Total number of gOTUs in the DNA data
+(no_gotu_dna <- sum(colSums(dnamat.pa)>0))
+
+# Total gOTUs in the stem data:
+(no_gotu_stem <- sum(lfdp23$total_abund>0))
+
+### Percent of gOTUs from stem data that are detected in DNA data
+round(100 * (no_gotu_dna/no_gotu_stem), 1)
+
+### Mean and SD of taxon richness in eDNA data
+(mdna <- mean(rowSums(dnamat.pa)))
+(sddna <- sd(rowSums(dnamat.pa)))
+(mindna <- min(rowSums(dnamat.pa)))
+(maxdna <- max(rowSums(dnamat.pa)))
+
+### Mean and SD of taxon richness in stem data at 5 m
+(m5 <- mean(rowSums(stem.23$abund[[1]]>0)[1:npts]))
+(sd5 <- sd(rowSums(stem.23$abund[[1]]>0)[1:npts]))
+(min5 <- min(rowSums(stem.23$abund[[1]]>0)[1:npts]))
+(max5 <- max(rowSums(stem.23$abund[[1]]>0)[1:npts]))
+
+### Mean and SD of taxon richness in stem data at 100 m
+(m100 <- mean(rowSums(stem.23$abund[[20]]>0)[1:npts]))
+(sd100 <- sd(rowSums(stem.23$abund[[20]]>0)[1:npts]))
+(min100 <- min(rowSums(stem.23$abund[[20]]>0)[1:npts]))
+(max100 <- max(rowSums(stem.23$abund[[20]]>0)[1:npts]))
+
+plot_level_summary_table[data_selector,] <- c(label[data_selector],
+                                              npts,
+                                              no_gotu_dna,
+                                              no_gotu_stem,
+                                              mdna, sddna, mindna, maxdna,
+                                              m5, sd5, min5, max5,
+                                              m100, sd100, min100, max100,
+                                              rank_corr_est, rank_corr_p,
+                                              ba_corr_est, ba_corr_p,
+                                              log_p)
+
+plot_level_summary_table[,-1] <- round(apply(plot_level_summary_table[,-1], 2, as.numeric), 3)
+
+if(data_selector==length(outfiles)){
+  write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.names = F)
+}
 
 ########################################################
 ### 2. Procrusties test of stem ordination and dna ordination
@@ -563,6 +563,10 @@ round(median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[20]]), 2)
 round(median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[20]]), 2)
 round(median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]]), 2)
 
+# Save confusion matrix
+saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
+             conf_stats_ses_list=conf_stats_ses_list), 
+        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250312.RDA"))
 
 
 # ### Figure 4
@@ -661,12 +665,6 @@ round(median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]]), 2)
 # dev.off()
 
 }
-
-
-# Save confusion matrix
-saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
-             conf_stats_ses_list=conf_stats_ses_list), 
-        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250312.RDA"))
 
 
 

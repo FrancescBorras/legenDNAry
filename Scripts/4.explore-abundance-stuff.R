@@ -6,9 +6,11 @@
 ########################################################
 ########################################################
 
+library(viridis)
+
 ### Load data
-dnamat <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20241205.RDA")[[1]]
-stem.23 <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20241205.RDA")[[2]]
+dnamat <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250312.RDA")[[1]]
+stem.23 <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250312.RDA")[[2]]
 
 ### Count number of valid eDNA sample points (out of 40)
 (npts <- nrow(stem.23$abund[[1]]) - length(grep('random', rownames(stem.23$abund[[1]]))))
@@ -46,7 +48,7 @@ ta_prop <- colSums(ta)/npts
 
 par(mfcol=c(2,2), mar=c(4,4,1,1))
 
-cp <- viridis_pal(option = "A")(20)[cut(log10((16*lfdp23$total_ba)+0.0001), 20)]
+cp <- viridis::viridis_pal(option = "A")(20)[cut(log10((16*lfdp23$total_ba)+0.0001), 20)]
 
 plot(lfdp23$total_abund, tp_prop, log='x',
      xlab="Total Abundance", ylab="Prop sites where TP @5m",
