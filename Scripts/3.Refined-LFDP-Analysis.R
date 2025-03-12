@@ -30,18 +30,18 @@ label <- c("lenient_10k",
            "repfilteredf1")
 
 ### Name data files
-outfiles <- c( "stem-soil-40pt-data-lenient_10k-20241205.RDA",
-               "stem-soil-40pt-data-lenient_200k-20241205.RDA",
-               "stem-soil-40pt-data-lenient_40k-20241205.RDA",
-               "stem-soil-40pt-data-lenient_70k-20241205.RDA",
-               "stem-soil-40pt-data-lenientf1-20241205.RDA",
-               "stem-soil-40pt-data-rare_lenient_10k-20241205.RDA",
-               "stem-soil-40pt-data-rare_lenient_200k-20241205.RDA",
-               "stem-soil-40pt-data-rare_lenient_40k-20241205.RDA",
-               "stem-soil-40pt-data-rare_lenient_70k-20241205.RDA",
-               "stem-soil-40pt-data-rare_repfiltered-20241205.RDA",
-               "stem-soil-40pt-data-repfiltered-20241205.RDA",
-               "stem-soil-40pt-data-repfilteredf1-20241205.RDA")
+outfiles <- c( "stem-soil-40pt-data-lenient_10k-20250312.RDA",
+               "stem-soil-40pt-data-lenient_200k-20250312.RDA",
+               "stem-soil-40pt-data-lenient_40k-20250312.RDA",
+               "stem-soil-40pt-data-lenient_70k-20250312.RDA",
+               "stem-soil-40pt-data-lenientf1-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_10k-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_200k-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_40k-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_70k-20250312.RDA",
+               "stem-soil-40pt-data-rare_repfiltered-20250312.RDA",
+               "stem-soil-40pt-data-repfiltered-20250312.RDA",
+               "stem-soil-40pt-data-repfilteredf1-20250312.RDA")
 
 ### Select data file to load (for testing)
 # data_selector <- 1
@@ -118,10 +118,6 @@ plot_level_summary_table <- data.frame(dataset=NA,
                                        log_p=NA)
 }
 
-
-mean(plot_level_summary_table$mdna)
-range(plot_level_summary_table$mdna)
-
 # Total number of gOTUs in the DNA data
 (no_gotu_dna <- sum(colSums(dnamat.pa)>0))
 
@@ -160,20 +156,11 @@ plot_level_summary_table[data_selector,] <- c(label[data_selector],
                                               ba_corr_est, ba_corr_p,
                                               log_p)
 
-
-
 plot_level_summary_table[,-1] <- round(apply(plot_level_summary_table[,-1], 2, as.numeric), 3)
 
-# plot_level_summary_table
-
-# x <- plot_level_summary_table
-# cs <- RColorBrewer::brewer.pal(12, "Paired")
-# plot(x$npts, x$no_gotu_dna, pch=1:12, col=cs, cex=2, lwd=3,
-#      xlab="Number of sample points retained",
-#      ylab="Number of gOTUs detected in eDNA")
-# legend("topleft", legend=x$dataset, cex=0.75, pch=1:12, col=cs, bty='n', pt.cex=1, pt.lwd = 2)
-
-write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.names = F)
+if(data_selector==length(outfiles)){
+  write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.names = F)
+}
 
 
 ########################################################
@@ -191,52 +178,32 @@ write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.
 # Correlation of DNA and stem species richness across spatial scales
 # Using both raw and rarefied data
 corrs <- corrs_rare <- list()
-corrs16 <- corrs_rare16 <- list()
-
-## This block was from previous data - maybe able to delete now...
-# For some reason, with the 7th file, the rarefy function is throwing error
-# It seems to be some kind of strange formatting of the `dnamat` numbers but I cannot solve it
-# If I save it and read back in then it seems to convert properly and works as expected.
-# if(data_selector==7){
-#   write.csv(dnamat, file="Processed_data/temp_dnamat.csv")
-#   dnamat <- read.csv("Processed_data/temp_dnamat.csv", row.names = 1)
-# }
+# corrs16 <- corrs_rare16 <- list()
 
 for(r in seq_along(stem.23$abund)){
-  
-  corrs[[r]] <- cor.test(rowSums(dnamat > 0), rowSums(stem.23$abund[[r]][1:npts,]>0))
-  corrs16[[r]] <- cor.test(rowSums(dnamat > 0), rowSums(stem.16$abund[[r]][1:npts,]>0))
-  
   corrs_rare[[r]] <- cor.test(rarefy(stem.23$abund[[r]][1:npts,],
                                      min(rowSums(stem.23$abund[[r]][1:npts,]))),
                               rarefy(dnamat, min(rowSums(dnamat))))
-  corrs_rare16[[r]] <- cor.test(rarefy(stem.16$abund[[r]][1:npts,],
-                                     min(rowSums(stem.16$abund[[r]][1:npts,]))),
-                              rarefy(dnamat, min(rowSums(dnamat))))
+
+  corrs[[r]] <- cor.test(rowSums(stem.23$abund[[r]][1:npts,]>0), rowSums(dnamat.pa))
   
+  # corrs_rare[[r]] <- cor.test(rarefy(stem.23$abund[[r]][1:npts,],
+  #                                    min(rowSums(stem.23$abund[[r]][1:npts,]))),
+  #                             rowSums(dnamat.pa))
+  # corrs_rare16[[r]] <- cor.test(rarefy(stem.16$abund[[r]][1:npts,],
+  #                                    min(rowSums(stem.16$abund[[r]][1:npts,]))),
+  #                             rarefy(dnamat, min(rowSums(dnamat))))
 }
-
-
-
-# corrs <- list()
-# for(r in seq_along(stem.23$abund)){
-#   corrs[[r]] <- cor.test(rowSums(dnamat>0), 
-#                          renyi(stem.23$abund[[r]][1:39,], hill = T, scales=2))
-# }
 
 ##################
 ### Figure 1 - there are a variety of plots below; need to decide which to include
 
 cp <- rev(viridis::viridis(20))
-
 cpsp <- viridis::viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_abund), 20)]
-
-# pdf("Figures/Fig1.rank-abundance-plot.pdf")
 
 pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_", 
            label[data_selector],
            ".pdf"), width = 7, height = 6)
-
 
 par(mfrow=c(3,2), mar=c(4,4,1,1))
 
@@ -250,14 +217,14 @@ b2 <- boxplot(rowSums(dnamat.pa), add=T, at=-0.5, width=2, col=2)
 axis(1, at=-0.5, labels="DNA")
 abline(v=0.25)
 abline(h=no_gotu_stem, lty=2)
-mtext("A", adj=0.1, line=-2)
+mtext("A", adj=0, line=0.1)
 
 # Full plot abundance
 plot(rank(lfdp23$total_abund), rank(colSums(dnamat.pa)), 
      ylab="Rank abundance of DNA reads",
      xlab="Rank abundance of stems", 
      pch=21, cex=1.5, bg=cpsp)
-mtext("B", adj=0.05, line=-1.5)
+mtext("B", adj=0, line=0.1)
 
 # Rank stem abundance is significantly positively correlated with rank DNA read abundance
 (rankcor <- cor.test(rank(lfdp23$total_abund), rank(colSums(dnamat.pa))))
@@ -269,13 +236,19 @@ plot(lfdp23$total_ba * 100,
      ylab="Prop. of sites detected in DNA",
      xlab=bquote(log[10] ~ "Total basal area" ~ (m^2)),
      pch=21, bg=cpsp, ylim=c(0,1), cex=1.5)
-mtext("C", adj=0.05, line=-1.5)
+mtext("C", adj=0, line=0.1)
+
+legend_image <- as.raster(matrix(rev(viridis_pal(option = "A")(50)), ncol=1))
+rasterImage(legend_image, 0.0015, 0.5, 0.0025, 0.95)                       ## the gradient
+polygon(x=c(0.0015,0.0025,0.0025,0.0015), y=c(0.5,0.5,0.95,0.95))
+text(0.0025, 0.925, "High", adj=-0.1, cex=0.75)
+text(0.0025, 0.525, "Low", adj=-0.1, cex=0.75)
+text(0.0025, 0.725, "Abundance", adj=-0.1)
 
 # Total BA is significantly positively correlated with prop. of DNA samples where detected
 (bacor <- cor.test(lfdp23$total_ba * 100, colSums(dnamat.pa)/npts))
 ba_corr_est <- bacor$estimate
 ba_corr_p <- bacor$p.value
-
 
 # plot(colSums(stem.23$abund[[20]][1:39,]>0),
 #      colSums(dnamat.pa),
@@ -291,7 +264,6 @@ ba_corr_p <- bacor$p.value
 # abline(lm(colSums(dnamat.pa) ~ colSums(stem.23$ba[[20]])),
 #        col='blue', lwd=2)
 
-
 ### Logistic regression with distance to nearest tree and detection
 y <- as.vector(dnamat.pa[1:npts,])
 x <- log10(as.vector(unlist(stem.23$nn[1:npts,])))
@@ -306,6 +278,7 @@ axis(2)
 box()
 
 mod <- glm(as.vector(dnamat.pa) ~ x, family="binomial")
+(summary(mod)$coefficients["x","Pr(>|z|)"])
 nd <- data.frame(x=seq(0, max(x), length.out=100))
 ypred <- predict(mod, nd, type='response')
 # 
@@ -327,9 +300,7 @@ for(sp in 1:ncol(stem.23$nn)){
         lwd=0.5)
   #col=ifelse(coeffs[sp]>0, rgb(1,0,0,0.4), rgb(0,0,1,0.4)))
 }
-mtext("D", adj=0.05, line=-1.5)
-
-log_p <- summary(mod)$coefficients["xx","Pr(>|z|)"]
+mtext("D", adj=0, line=0.1)
 
 # plot(lfdp23$total_abund,
 #      jitter(1*(colSums(dnamat.pa)>0), 0.1), log='x',
@@ -388,7 +359,7 @@ log_p <- summary(mod)$coefficients["xx","Pr(>|z|)"]
 # axis(2)
 
 plot(seq_along(stem.23$abund), sapply(corrs_rare, function(x) x$estimate), 
-     ylim=c(-1,1), axes=F,
+     ylim=c(-0.5,0.75), axes=F,
      pch=21, bg='grey', xlab="Radius (m)",
      ylab="Pearson correlation",
      # main="Stem vs. DNA richness (rarefied)"
@@ -400,7 +371,8 @@ points(seq_along(stem.23$abund), sapply(corrs_rare, function(x) x$estimate),
        pch=21, bg=cp, cex=2)
 axis(1, labels=seq(5, 100, 5), at=1:20)
 axis(2)
-mtext("E", adj=0.05, line=-1.5)
+box()
+mtext("E", adj=0, line=0.1)
 
 
 dev.off()
@@ -581,130 +553,112 @@ for (i in 1:20) {
   conf_stats_ses_list[[i]] <- results[[i]]$conf_stats_ses
 }
 
-
-### There is a significant difference of observed balanced accuracy with increasing scale.
-### Generally, the values decline as you get bigger scales
-ba_obs <- do.call(cbind, lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`))
-ba_ses <- do.call(cbind, lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`))
-
-
-m2_obs <- aov(as.numeric(ba_obs) ~ as.factor(rep(1:20, each=npts)))
-anova(m2_obs)
-
-
-### However, there is no difference in SES balanced accuracy across the scales
-### A slight hump appers in ~ 30-40 m range but these are not sig different from 
-m2_ses <- aov(as.numeric(ba_ses) ~ as.factor(rep(1:20, each=npts)))
-anova(m2_ses)
-TukeyHSD(m2_ses)
-
 ### Median Sensitivity, Specificity & Balanced Accuracy at 5 m
-median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[1]])
-median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[1]])
-median(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`)[[1]])
+round(median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[1]]), 2)
+round(median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[1]]), 2)
+round(median(lapply(conf_stats_obs_list, function(x) x$MCC)[[1]]), 2)
 
 ### Median Sensitivity, Specificity & Balanced Accuracy at 100 m
-median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[20]])
-median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[20]])
-median(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`)[[5]])
-median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]])
+round(median(lapply(conf_stats_obs_list, function(x) x$Sensitivity)[[20]]), 2)
+round(median(lapply(conf_stats_obs_list, function(x) x$Specificity)[[20]]), 2)
+round(median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]]), 2)
 
 
 
-### Figure 4
-
-# pdf("Figures/Fig4.Confusion-matrix-stats.pdf", width = 8, height = 10)
-
-pdf(paste0("Figures/compare_filtering/Fig4.Confusion-matrix-stats_", 
-           label[data_selector],
-           ".pdf"), width = 8, height = 10)
-
-
-par(mfrow=c(3,2), mar=c(4,4,1,1), oma=c(1,1,1,1))
-
-## Sensitivity (true positive rate)
-boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), 
-        ylab="Sensitivity (observed)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-graphics::box()
-mtext("A", adj=0, line=0.5)
-
-boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
-        ylab="Sensitivity (SES)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-# abline(h=c(-1.96, 1.96), lwd=2, lty=2)
-polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
-        axes=F, col=cp, add=T)
-graphics::box()
-mtext("D", adj=0, line=0.5)
-
-## Specificity (true negative rate)
-boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
-        ylab="Specificity (observed)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-graphics::box()
-mtext("B", adj=0, line=0.5)
-
-boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
-        ylab="Specificity (SES)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
-        axes=F, col=cp, add=T)
-graphics::box()
-mtext("E", adj=0, line=0.5)
-
-## Balanced Accuracy
-# boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`), 
-#         ylab="Balanced Accuracy (observed)", 
+# ### Figure 4
+# 
+# # pdf("Figures/Fig4.Confusion-matrix-stats.pdf", width = 8, height = 10)
+# 
+# pdf(paste0("Figures/compare_filtering/Fig4.Confusion-matrix-stats_", 
+#            label[data_selector],
+#            ".pdf"), width = 8, height = 10)
+# 
+# 
+# par(mfrow=c(3,2), mar=c(4,4,1,1), oma=c(1,1,1,1))
+# 
+# ## Sensitivity (true positive rate)
+# boxplot(lapply(conf_stats_obs_list, function(x) x$Sensitivity), 
+#         ylab="Sensitivity (observed)", 
+#         xlab="Radius (m)", axes=F, col=cp)
+# axis(1, labels=names(stem.23$abund), at=1:20)
+# axis(2)
+# graphics::box()
+# mtext("A", adj=0, line=0.5)
+# 
+# boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
+#         ylab="Sensitivity (SES)", 
+#         xlab="Radius (m)", axes=F, col=cp)
+# axis(1, labels=names(stem.23$abund), at=1:20)
+# axis(2)
+# # abline(h=c(-1.96, 1.96), lwd=2, lty=2)
+# polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+# boxplot(lapply(conf_stats_ses_list, function(x) x$Sensitivity), 
+#         axes=F, col=cp, add=T)
+# graphics::box()
+# mtext("D", adj=0, line=0.5)
+# 
+# ## Specificity (true negative rate)
+# boxplot(lapply(conf_stats_obs_list, function(x) x$Specificity), 
+#         ylab="Specificity (observed)", 
+#         xlab="Radius (m)", axes=F, col=cp)
+# axis(1, labels=names(stem.23$abund), at=1:20)
+# axis(2)
+# graphics::box()
+# mtext("B", adj=0, line=0.5)
+# 
+# boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
+#         ylab="Specificity (SES)", 
+#         xlab="Radius (m)", axes=F, col=cp)
+# axis(1, labels=names(stem.23$abund), at=1:20)
+# axis(2)
+# polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+# boxplot(lapply(conf_stats_ses_list, function(x) x$Specificity), 
+#         axes=F, col=cp, add=T)
+# graphics::box()
+# mtext("E", adj=0, line=0.5)
+# 
+# ## Balanced Accuracy
+# # boxplot(lapply(conf_stats_obs_list, function(x) x$`Balanced Accuracy`), 
+# #         ylab="Balanced Accuracy (observed)", 
+# #         xlab="Radius (m)", axes=F, col=cp)
+# # axis(1, labels=names(stem.23$abund), at=1:20)
+# # axis(2)
+# # graphics::box()
+# # mtext("C", adj=0, line=0.5)
+# # 
+# # boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
+# #         ylab="Balanced Accuracy (SES)", 
+# #         xlab="Radius (m)", axes=F, col=cp)
+# # axis(1, labels=names(stem.23$abund), at=1:20)
+# # axis(2)
+# # polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
+# # boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
+# #         axes=F, col=cp, add=T)
+# # graphics::box()
+# # mtext("F", adj=0, line=0.5)
+# 
+# ## MCC
+# boxplot(lapply(conf_stats_obs_list, function(x) x$`MCC`), 
+#         ylab="MCC (observed)", 
 #         xlab="Radius (m)", axes=F, col=cp)
 # axis(1, labels=names(stem.23$abund), at=1:20)
 # axis(2)
 # graphics::box()
 # mtext("C", adj=0, line=0.5)
 # 
-# boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
-#         ylab="Balanced Accuracy (SES)", 
+# boxplot(lapply(conf_stats_ses_list, function(x) x$`MCC`),
+#         ylab="MCC (SES)", 
 #         xlab="Radius (m)", axes=F, col=cp)
 # axis(1, labels=names(stem.23$abund), at=1:20)
 # axis(2)
 # polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-# boxplot(lapply(conf_stats_ses_list, function(x) x$`Balanced Accuracy`), 
+# boxplot(lapply(conf_stats_ses_list, function(x) x$`MCC`), 
 #         axes=F, col=cp, add=T)
 # graphics::box()
 # mtext("F", adj=0, line=0.5)
-
-## MCC
-boxplot(lapply(conf_stats_obs_list, function(x) x$`MCC`), 
-        ylab="MCC (observed)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-graphics::box()
-mtext("C", adj=0, line=0.5)
-
-boxplot(lapply(conf_stats_ses_list, function(x) x$`MCC`),
-        ylab="MCC (SES)", 
-        xlab="Radius (m)", axes=F, col=cp)
-axis(1, labels=names(stem.23$abund), at=1:20)
-axis(2)
-polygon(x=c(-1,200,200,-1), y=c(-1.96, -1.96, 1.96, 1.96), lty=0, col='grey')
-boxplot(lapply(conf_stats_ses_list, function(x) x$`MCC`), 
-        axes=F, col=cp, add=T)
-graphics::box()
-mtext("F", adj=0, line=0.5)
-
-
-dev.off()
+# 
+# 
+# dev.off()
 
 }
 
@@ -712,7 +666,13 @@ dev.off()
 # Save confusion matrix
 saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
              conf_stats_ses_list=conf_stats_ses_list), 
-        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250307.RDA"))
+        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250312.RDA"))
+
+
+
+
+### =========== END ===========
+#################################################################################
 
 
 

@@ -9,11 +9,11 @@
 ### Color palette for plotting
 cp <- rev(viridis::viridis(20))
 
-g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250310.RDA")[[1]]
-g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250310.RDA")[[2]]
+g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250312.RDA")[[1]]
+g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250312.RDA")[[2]]
 
-conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[1]]
-conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[2]]
+conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250312.RDA")[[1]]
+conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250312.RDA")[[2]]
 
 
 pdf(paste0("Figures/compare_filtering/Fig4.Confusion-matrix-stats_",
