@@ -94,6 +94,11 @@ sum(lfdp23$total_abund[rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_abund)
 sum(lfdp23$total_ba[rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_ba)
 length(gotu_in)/nrow(lfdp23)
 
+# gOTUs NOT in the DNA data
+round(sum(lfdp23$total_abund[!rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_abund), 2)
+round(sum(lfdp23$total_ba[!rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_ba), 2)
+length(gotu_in)/nrow(lfdp23)
+
 ########################################################
 ########################################################
 ##################
