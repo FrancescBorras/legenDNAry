@@ -44,7 +44,7 @@ for(data_selector in seq_along(outfiles)){
   dna <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250312.RDA")[[1]]
   stem.23 <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250312.RDA")[[2]]
   
-  pdf(paste0("Figures/compare_filtering/Fig4.Confusion-matrix-stats_",
+  pdf(paste0("Figures/compare_filtering/Fig3.Confusion-matrix-stats_",
            label[data_selector],
            ".pdf"), width = 8, height = 10)
 

@@ -137,7 +137,7 @@ for(r in seq_along(stem.23$abund)){
 cp <- rev(viridis::viridis(20))
 cpsp <- viridis::viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_abund), 20)]
 
-pdf(paste0("Figures/compare_filtering/Fig1.rank-abundance-plot_", 
+pdf(paste0("Figures/compare_filtering/Fig2.rank-abundance-plot_", 
            label[data_selector],
            ".pdf"), width = 7, height = 6)
 
