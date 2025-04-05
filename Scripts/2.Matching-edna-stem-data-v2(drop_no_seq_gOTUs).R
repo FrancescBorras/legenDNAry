@@ -124,10 +124,10 @@ for(data_selector in seq_along(data)){
   
   ##### THIS BLOCK COLLAPSES THE DNA DATA TO THE gOTU CLUSTERS
   ### Identify all POTUs/OTUs we need to keep because they are assigned to a gOTU
-  potus.keep <- codes$POTU[!is.na(codes$gOTU)]
+  potus.keep <- codes$POTU[!is.na(codes$gOTU_2)]
   otus.keep <- otu.potu.link[[6]]$OTU[match(potus.keep, otu.potu.link[[6]]$abundance)]
-  gotus.keep <- codes$gOTU[!is.na(codes$gOTU)]
-  codes.keep <- codes$`SPECIES CODE`[!is.na(codes$gOTU)]
+  gotus.keep <- codes$gOTU_2[!is.na(codes$gOTU_2)]
+  codes.keep <- codes$`SPECIES CODE`[!is.na(codes$gOTU_2)]
   
   # POTUs that we keep and to be collapsed
   codes.collapse.list <- split(codes.keep, gotus.keep)
@@ -278,7 +278,7 @@ for(data_selector in seq_along(data)){
   
   outfile <- paste0("Processed_data/stem-soil-40pt-data-",
                     names(data)[data_selector], 
-                    "-20250404.RDA")
+                    "-drop_noSeq_gOTUs-20250312.RDA")
   
   saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), outfile)
 }

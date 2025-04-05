@@ -32,7 +32,7 @@ labels <- c("lenient_10k",
 for(data_selector in seq_along(labels)){
   
   file <- paste0("Processed_data/stem-soil-40pt-data-", 
-                 labels[data_selector], "-20250404.RDA")
+                 labels[data_selector], "-drop_noSeq_gOTUs-20250312.RDA")
 
   ### Load data
   dnamat <- readRDS(file)[[1]]
@@ -42,7 +42,7 @@ for(data_selector in seq_along(labels)){
   (npts <- nrow(stem.23$abund[[1]]) - length(grep('random', rownames(stem.23$abund[[1]]))))
   
   ### gOTU full plot summaries
-  lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20250404-gOTUs.RDA")
+  lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
   
   ### Make presence absence matrices
   dnamat.pa <- 1*(dnamat>0)
@@ -70,9 +70,9 @@ for(data_selector in seq_along(labels)){
 
   pdf(paste0("Figures/compare_filtering/Fig4.Abundance-conf_mat_",
              labels[data_selector],
-             ".pdf"), width = 7, height = 6)
+             "-drop_noSeq_gOTUs.pdf"), width = 6, height = 7)
   
-  par(mfcol=c(2,2), mar=c(4,5,2,1))
+  par(mfcol=c(2,2), mar=c(4,4,2,1))
   
   cp <- viridis::viridis_pal(option = "A")(20)[cut(log10((16*lfdp23$total_ba)+0.0001), 20)]
   
