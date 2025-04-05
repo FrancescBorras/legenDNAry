@@ -1,10 +1,44 @@
 library(microViz)
+library(dada2)
 library(MiscMetabar)
 
 subsample_etc<- readRDS("Processed_data/subsample-smallplot.RData")
 
+subsample_etc_gotus<- readRDS("Processed_data/subsample-smallplot-gotus.RData")
+
+## making sure musa genus is swapped out with HELCAR
+View(tax_table(subsample_etc_gotus$ssdat))
+
+# Define the correct taxonomy for Heliconia caribaea
+heliconia_tax <- c(
+  superkingdom = "Eukaryota",
+  phylum       = "Streptophyta",
+  class        = "Liliopsida",
+  order        = "Zingiberales",
+  family       = "Heliconiaceae",
+  genus        = "Heliconia",
+  species      = "Heliconia caribaea",
+  speciesOTU   = "Heliconia caribaea_1"
+)
+
+# Function to update taxonomy for gOTU76
+update_gOTU76_tax <- function(physeq_obj) {
+  tax <- tax_table(physeq_obj)
+  if ("gOTU76" %in% rownames(tax)) {
+    tax["gOTU76", ] <- heliconia_tax
+    tax_table(physeq_obj) <- tax
+  }
+  return(physeq_obj)
+}
+
+# Apply the function to each element in your named list
+subsample_etc<- lapply(subsample_etc, update_gOTU76_tax)
+subsample_etc_gotus<- lapply(subsample_etc_gotus, update_gOTU76_tax)
+
+subsample_etc$ssdat
+subsample_etc$repfil_ssdat
 #### Making some upset plots for sub-sample & mixed samples - c12
-tab <- subsample_etc$ssdat
+tab <- subsample_etc_gotus$ssdat
 c12 <- subset_samples(tab, realsample1 == "C12")
 c12 <- subset_samples(c12, DNAtreat == "clean")
 c12<- phyloseq_validate(c12, remove_undetected = TRUE)
@@ -12,7 +46,7 @@ k1 <- upset_pq(c12, fact = "sample_from_sheet", name='sample/subsample', set_siz
   ggtitle("All data, libs >10k, no other filtering, \nmixed sample 12 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$rare_ssdat
+tab <- subsample_etc_gotus$rare_ssdat
 c12 <- subset_samples(tab, realsample1 == "C12")
 c12 <- subset_samples(c12, DNAtreat == "clean")
 c12<- phyloseq_validate(c12, remove_undetected = TRUE)
@@ -20,7 +54,7 @@ k2 <- upset_pq(c12, fact = "sample_from_sheet", name='sample/subsample', set_siz
   ggtitle("All data, libs >10k, rarefied, \nmixed sample 12 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$repfil_ssdat
+tab <- subsample_etc_gotus$repfil_ssdat
 c12 <- subset_samples(tab, realsample1 == "C12")
 c12 <- subset_samples(c12, DNAtreat == "clean")
 c12<- phyloseq_validate(c12, remove_undetected = TRUE)
@@ -29,7 +63,7 @@ k3 <- upset_pq(c12, fact = "sample_from_sheet", name='sample/subsample', set_siz
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
 
-tab <- subsample_etc$repfil_ssdattf1
+tab <- subsample_etc_gotus$repfil_ssdattf1
 c12 <- subset_samples(tab, realsample1 == "C12")
 c12 <- subset_samples(c12, DNAtreat == "clean")
 c12<- phyloseq_validate(c12, remove_undetected = TRUE)
@@ -43,7 +77,7 @@ figure <- ggarrange(k1, k2, k3, k4,
 ggsave(plot = figure, file="Figures/c12_output.pdf", width = 212, height = 210, units = "mm")
 
 #### Making some upset plots for sub-sample & mixed samples - c18
-tab <- subsample_etc$ssdat
+tab <- subsample_etc_gotus$ssdat
 c18 <- subset_samples(tab, realsample1 == "C18")
 c18 <- subset_samples(c18, DNAtreat == "clean")
 c18<- phyloseq_validate(c18, remove_undetected = TRUE)
@@ -51,7 +85,7 @@ k1 <- upset_pq(c18, fact = "sample_from_sheet", name='sample/subsample', set_siz
   ggtitle("All data, libs >10k, no other filtering, \nmixed sample 18 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$rare_ssdat
+tab <- subsample_etc_gotus$rare_ssdat
 c18 <- subset_samples(tab, realsample1 == "C18")
 c18 <- subset_samples(c18, DNAtreat == "clean")
 c18<- phyloseq_validate(c18, remove_undetected = TRUE)
@@ -59,7 +93,7 @@ k2 <- upset_pq(c18, fact = "sample_from_sheet", name='sample/subsample', set_siz
   ggtitle("All data, libs >10k, rarefied, \nmixed sample 18 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$repfil_ssdat
+tab <- subsample_etc_gotus$repfil_ssdat
 c18 <- subset_samples(tab, realsample1 == "C18")
 c18 <- subset_samples(c18, DNAtreat == "clean")
 c18<- phyloseq_validate(c18, remove_undetected = TRUE)
@@ -68,7 +102,7 @@ k3 <- upset_pq(c18, fact = "sample_from_sheet", name='sample/subsample', set_siz
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
 
-tab <- subsample_etc$repfil_ssdattf1
+tab <- subsample_etc_gotus$repfil_ssdattf1
 c18 <- subset_samples(tab, realsample1 == "C18")
 c18 <- subset_samples(c18, DNAtreat == "clean")
 c18<- phyloseq_validate(c18, remove_undetected = TRUE)
@@ -83,7 +117,7 @@ ggsave(plot = figure, file="Figures/c18_output.pdf", width = 210, height = 210, 
 
 
 #### Making some upset plots for sub-sample & mixed samples - c8
-tab <- subsample_etc$ssdat
+tab <- subsample_etc_gotus$ssdat
 c8 <- subset_samples(tab, realsample1 == "C8")
 c8 <- subset_samples(c8, DNAtreat == "clean")
 c8<- phyloseq_validate(c8, remove_undetected = TRUE)
@@ -91,7 +125,7 @@ k1 <- upset_pq(c8, fact = "sample_from_sheet", name='sample/subsample', set_size
   ggtitle("All data, libs >10k, no other filtering, \nmixed sample 8 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$rare_ssdat
+tab <- subsample_etc_gotus$rare_ssdat
 c8 <- subset_samples(tab, realsample1 == "C8")
 c8 <- subset_samples(c8, DNAtreat == "clean")
 c8<- phyloseq_validate(c8, remove_undetected = TRUE)
@@ -99,7 +133,7 @@ k2 <- upset_pq(c8, fact = "sample_from_sheet", name='sample/subsample', set_size
   ggtitle("All data, libs >10k, rarefied, \nmixed sample 8 & subsamples") +
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
-tab <- subsample_etc$repfil_ssdat
+tab <- subsample_etc_gotus$repfil_ssdat
 c8 <- subset_samples(tab, realsample1 == "C8")
 c8 <- subset_samples(c8, DNAtreat == "clean")
 c8<- phyloseq_validate(c8, remove_undetected = TRUE)
@@ -108,7 +142,7 @@ k3 <- upset_pq(c8, fact = "sample_from_sheet", name='sample/subsample', set_size
   theme(plot.title = element_text(size = 10), axis.title.x=element_blank())
 
 
-tab <- subsample_etc$repfil_ssdattf1
+tab <- subsample_etc_gotus$repfil_ssdattf1
 c8 <- subset_samples(tab, realsample1 == "C8")
 c8 <- subset_samples(c8, DNAtreat == "clean")
 c8<- phyloseq_validate(c8, remove_undetected = TRUE)
@@ -122,16 +156,16 @@ figure <- ggarrange(k1, k2, k3, k4,
 ggsave(plot = figure, file="Figures/c8_output.pdf", width = 210, height = 210, units = "mm")
 
 #### taking a quick look at the same with the small grid samples...
-tab <- subsample_etc$ssdat
+tab <- subsample_etc_gotus$ssdat
 tabinc1 <- subset_samples(tab, experiment == "bigplot/smallss")
 tabinc1 <- phyloseq_validate(tabinc1, remove_undetected = TRUE)
-tab <- subsample_etc$rare_ssdat
+tab <- subsample_etc_gotus$rare_ssdat
 tabinc2 <- subset_samples(tab, experiment == "bigplot/smallss")
 tabinc2 <- phyloseq_validate(tabinc2, remove_undetected = TRUE)
-tab <- subsample_etc$repfil_ssdat
+tab <- subsample_etc_gotus$repfil_ssdat
 tabinc3 <- subset_samples(tab, experiment == "bigplot/smallss")
 tabinc3 <- phyloseq_validate(tabinc3, remove_undetected = TRUE)
-tab <- subsample_etc$repfil_ssdattf1
+tab <- subsample_etc_gotus$repfil_ssdattf1
 tabinc4 <- subset_samples(tab, experiment == "bigplot/smallss")
 tabinc4 <- phyloseq_validate(tabinc4, remove_undetected = TRUE)
 

@@ -1316,6 +1316,13 @@ reflbids1$Genus <- rownames(reflbids1)
 R1SppAssList <- lapply(R1SppAssList, function(x) merge(x, reflbids1, by = "Genus", all.x = TRUE))
 R2SppAssList <- lapply(R2SppAssList, function(x) merge(x, reflbids1, by = "Genus", all.x = TRUE))
 
+library(rlist)
+list.save(R1SppAssList, 'Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds')
+list.save(R2SppAssList, 'Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2.rds')
+
+View(R1SppAssList$dada.pspool.nc.lulu)
+View(R2SppAssList$dada.pspool.nc.lulu)
+
 library(textshape)
 R1SppAssList <- lapply(R1SppAssList, function(x) textshape::column_to_rownames(x, loc = "sequence"))
 R2SppAssList <- lapply(R2SppAssList, function(x) textshape::column_to_rownames(x, loc = "sequence"))

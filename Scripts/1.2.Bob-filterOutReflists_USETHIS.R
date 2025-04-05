@@ -15,13 +15,16 @@ R1Ref.lib.ids <- lapply(R1all.taxs.source.otu, function(x) subset(x, idsource ==
 R2Ref.lib.ids <- lapply(R2all.taxs.source.otu, function(x) subset(x, idsource == "RefLib"))
 
 str(R1Ref.lib.ids)
-View(R1Ref.lib.ids$dada.pspool.nc.lulu)
-View(R2Ref.lib.ids$dada.pspool.nc.lulu)
+R1Ref.lib.ids$dada.pspool.nc.lulu
+R2Ref.lib.ids$dada.pspool.nc.lulu
 
-## Note that OTU34 needs removal - it was from an unidentified "vine" in the plot (i.e. paraphyletic)
+## Note that OTU34 in R1 , and OTU 33 in R2 needs removal - it was from an unidentified "vine" in the plot (i.e. paraphyletic)
 ## and thus is not in the census data as well as having no identification use at all
 R1Ref.lib.ids <- lapply(R1Ref.lib.ids, function(x) x[!(row.names(x) %in% "OTU34"), ])
-R2Ref.lib.ids <- lapply(R2Ref.lib.ids, function(x) x[!(row.names(x) %in% "OTU34"), ])
+R2Ref.lib.ids <- lapply(R2Ref.lib.ids, function(x) x[!(row.names(x) %in% "OTU33"), ])
+
+str(R1Ref.lib.ids$dada.pspool.nc.lulu)
+str(R2Ref.lib.ids$dada.pspool.nc.lulu)
 
 # View(Ref.lib.ids)
 # View(Ref.lib.ids$dada.pspool.nc.lulu)
@@ -89,6 +92,7 @@ postcut_r2@sam_data$origreflibotus <- rowSums(otu_table(precut) != 0)
 postcut_r2@sam_data$afterlibsize <- rowSums(otu_table(postcut_r2))
 postcut_r2@sam_data$afterlibotus <- rowSums(otu_table(postcut_r2) != 0)
 postcut_r2 <-phyloseq_validate(postcut_r2, remove_undetected = TRUE)
+postcut
 postcut_r2
 ## For downstream graphs summarizing the proportions of reads and OTUs discarded in each sample
 ## because they did not appear in the reference library
@@ -161,9 +165,14 @@ smallgridpostcut <-phyloseq_validate(smallgridpostcut, remove_undetected = TRUE)
 
 ## to get the link between otu names and POTU (cesc's code for the reference libraries, load this list)
 # otu.potu.link <- readRDS("/Users/glennd/Documents/GitHub/legenDNAry/Raw_data/Reference_library_filtering/OTU-to-RefIDs-List.rds")
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
-unique(otu.potu.link$dada.pspool.nc.lulu$OTU)
->>>>>>> Stashed changes
+#otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
+#unique(otu.potu.link$dada.pspool.nc.lulu$OTU)
+otu.potu.linkR1 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds")
+otu.potu.linkR2 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2.rds")
+str(otu.potu.linkR1)
+unique(otu.potu.linkR1$dada.pspool.nc.lulu$OTU)
+unique(otu.potu.linkR2$dada.pspool.nc.lulu$OTU)
+
 ### Now to get some filtered variants for analyses representing lenient and stringent filtering
 ### Note that first sub-setting data so that only samples from the biggrid (no incubation experiments etc)
 ### are included
@@ -204,6 +213,9 @@ repfil_ssdat@sam_data$origreflibotus <- rowSums(otu_table(repfil_ssdat) != 0)
 repfil_ssdat <-phyloseq_validate(repfil_ssdat, remove_undetected = TRUE)
 
 rare_ssdat <- rarfun(ssdat)
+install.packages("remotes")
+remotes::install_github("vmikk/metagMisc")
+library(metagMisc)
 repfil_ssdattf1 <- phyloseq_filter_sample_wise_abund_trim(repfil_ssdat, minabund = 0.0001, relabund = TRUE)
 
 dat1 <- list(ssdat = ssdat,
@@ -250,9 +262,9 @@ rarfun  <- function(x) {
 }
 
 rare_lenient <- rarfun(lenient)
-rare_lenientf1 <- rarfun(lenientf1) ## Rarefaction without replacement does not function - ignore
+#rare_lenientf1 <- rarfun(lenientf1) ## Rarefaction without replacement does not function - ignore
 rare_repfiltered <- rarfun(repfiltered)
-rare_repfilteredf1 <- rarfun(repfilteredf1)  ## Rarefaction without replacement does not function - ignore
+#rare_repfilteredf1 <- rarfun(repfilteredf1)  ## Rarefaction without replacement does not function - ignore
 rare_lenient_40k <- rarfun(biggrid_40k)
 rare_lenient_70k <- rarfun(biggrid_70k)
 rare_lenient_200k <- rarfun(biggrid_200k)
@@ -287,3 +299,228 @@ data <- list(lenient_10k=lenient,
              rare_lenient_200k=rare_lenient_200k)
 
 saveRDS(data, "Processed_data/PR_eDNA-for-analysis_2024-12-04.RData")
+
+#### Looking at matching OTU - POTU - gOTU
+
+# bobs matching etc
+bobs <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20241205.RDA")
+str(bobs)
+View(bobs)
+
+## Matching
+
+## Link between OTU and pOTU codes - old object incorrect for R2 iterations
+#otupotu <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
+#otupotu <- otupotu[[6]]
+str(otupotu)
+## Link between OTU and pOTU codes
+otupotuR1 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds")
+otupotuR2 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2.rds")
+otupotuR1 <- otupotuR1[[6]] # only using pseudopooled, lulu filtered data (6th object on list)
+otupotuR2 <- otupotuR2[[6]]
+str(otupotuR1)
+## need to remove OTU34 (unnecessary identified plot taxon) - OTU34 for R1 and OTU33 for R2
+otupotuR1 <- otupotuR1[otupotuR1$OTU != "OTU34", ]
+otupotuR2 <- otupotuR2[otupotuR2$OTU != "OTU33", ]
+View(otupotuR1)
+otupotuR1$sequence <- rownames(otupotuR1)
+otupotuR2$sequence <- rownames(otupotuR2)
+## Now getting pOTU to gOTU
+codes <- readxl::read_xlsx("Raw_data/LFDP-SPcodes-Wseq.xlsx")
+str(codes)
+codes <- subset(codes, LFDP2023==1) # making sure only 2023 data is used
+##object that has all three fields, OTU, POTU and gOTU
+otu_gotu_mapR1 <- merge(otupotuR1, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
+otu_gotu_mapR2 <- merge(otupotuR2, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
+
+## Now looping through all PS objects in alldat (the different bioinformatic filterings of the 
+## 38 biggrid points) and making new PS objects with just GOTU codes
+
+alldat <- readRDS("Processed_data/PR_eDNA-for-analysis_2024-12-04.RData")
+alldat
+# Create named vectors for mapping (R1 and R2)
+otu_to_gotu_R1 <- setNames(otu_gotu_mapR1$gOTU, otu_gotu_mapR1$OTU)
+otu_to_gotu_R2 <- setNames(otu_gotu_mapR2$gOTU, otu_gotu_mapR2$OTU)
+
+# Initialize list for updated phyloseq objects
+alldatgotu <- list()
+
+# Loop over all phyloseq objects in alldat
+for (name in names(alldat)) {
+  ps_obj <- alldat[[name]]
+  
+  # Determine which mapping to use
+  if (grepl("repfiltered", name)) {
+    otu_to_gotu <- otu_to_gotu_R2
+  } else {
+    otu_to_gotu <- otu_to_gotu_R1
+  }
+  
+  # Extract components
+  otu_tab <- as(otu_table(ps_obj), "matrix")
+  sample_dat <- sample_data(ps_obj)
+  tax_tab <- tax_table(ps_obj)
+  
+  # Transpose OTU table if necessary
+  if (!taxa_are_rows(otu_table(ps_obj))) {
+    otu_tab <- t(otu_tab)
+  }
+  
+  # Identify OTUs that have a gOTU mapping
+  matched_otus <- intersect(rownames(otu_tab), names(otu_to_gotu))
+  renamed_otus <- otu_to_gotu[matched_otus]
+  
+  # Rename OTUs
+  rownames(otu_tab)[match(matched_otus, rownames(otu_tab))] <- renamed_otus
+  
+  # Collapse duplicate gOTUs
+  otu_tab_collapsed <- as.matrix(rowsum(otu_tab, group = rownames(otu_tab)))
+  
+  # Keep only mapped gOTUs
+  valid_gOTUs <- intersect(rownames(otu_tab_collapsed), unique(otu_to_gotu))
+  otu_tab_collapsed <- otu_tab_collapsed[valid_gOTUs, , drop = FALSE]
+  
+  # Update taxonomy table to match
+  if (!is.null(tax_tab)) {
+    rownames(tax_tab)[rownames(tax_tab) %in% matched_otus] <- renamed_otus
+    tax_tab <- tax_tab[!duplicated(rownames(tax_tab)), , drop = FALSE]
+    tax_tab <- tax_tab[valid_gOTUs, , drop = FALSE]
+  }
+  
+  # Rebuild phyloseq object
+  new_ps <- phyloseq(
+    otu_table(otu_tab_collapsed, taxa_are_rows = TRUE),
+    sample_dat,
+    if (!is.null(tax_tab)) tax_table(tax_tab)
+  )
+  
+  alldatgotu[[name]] <- new_ps
+  message("✅ Processed: ", name)
+}
+
+
+alldatgotu
+
+#################################
+
+
+####### Now working with gOTUs for just the big plot and smallplot samples for combined
+####### figure 2 plots (rarefaction / hill numbers) etc 
+subsample_etc<- readRDS("Processed_data/subsample-smallplot.RData")
+subsample_etc
+# Initialize list for updated phyloseq objects
+# Create named vectors for mapping (R1 and R2)
+otu_to_gotu_R1 <- setNames(otu_gotu_mapR1$gOTU, otu_gotu_mapR1$OTU)
+otu_to_gotu_R2 <- setNames(otu_gotu_mapR2$gOTU, otu_gotu_mapR2$OTU)
+
+# Initialize list for updated phyloseq objects
+subsample_etc_gotus <- list()
+
+# Loop through all subsample_etc phyloseq objects
+for (name in names(subsample_etc)) {
+  ps_obj <- subsample_etc[[name]]
+  
+  # Select correct OTU-to-gOTU mapping
+  if (grepl("repfil", name)) {
+    otu_to_gotu <- otu_to_gotu_R2
+  } else {
+    otu_to_gotu <- otu_to_gotu_R1
+  }
+  
+  # Extract and process components
+  otu_tab <- as(otu_table(ps_obj), "matrix")
+  sample_dat <- sample_data(ps_obj)
+  tax_tab <- tax_table(ps_obj)
+  
+  # Transpose OTU table if needed
+  if (!taxa_are_rows(otu_table(ps_obj))) {
+    otu_tab <- t(otu_tab)
+  }
+  
+  # Match and rename OTUs
+  matched_otus <- intersect(rownames(otu_tab), names(otu_to_gotu))
+  renamed_otus <- otu_to_gotu[matched_otus]
+  rownames(otu_tab)[match(matched_otus, rownames(otu_tab))] <- renamed_otus
+  
+  # Collapse duplicate gOTUs
+  otu_tab_collapsed <- as.matrix(rowsum(otu_tab, group = rownames(otu_tab)))
+  
+  # Remove OTUs that weren't mapped to gOTUs
+  valid_gOTUs <- intersect(rownames(otu_tab_collapsed), unique(otu_to_gotu))
+  otu_tab_collapsed <- otu_tab_collapsed[valid_gOTUs, , drop = FALSE]
+  
+  # Update taxonomy table
+  if (!is.null(tax_tab)) {
+    rownames(tax_tab)[rownames(tax_tab) %in% matched_otus] <- renamed_otus
+    tax_tab <- tax_tab[!duplicated(rownames(tax_tab)), , drop = FALSE]
+    tax_tab <- tax_tab[valid_gOTUs, , drop = FALSE]
+  }
+  
+  # Create updated phyloseq object
+  new_ps <- phyloseq(
+    otu_table(otu_tab_collapsed, taxa_are_rows = TRUE),
+    sample_dat,
+    if (!is.null(tax_tab)) tax_table(tax_tab)
+  )
+  
+  # Store result
+  subsample_etc_gotus[[name]] <- new_ps
+  message("✅ Processed: ", name)
+}
+
+
+
+
+saveRDS(subsample_etc_gotus, "Processed_data/subsample-smallplot-gotus.RData")
+
+## Getting gotus from 12 different bioinformatic filtering options
+
+## lets extract the intensive plot and get some summary stats - total LFDP OTUs and mean / SD per sample
+tab <- subsample_etc_gotus$ssdat
+tabinc1 <- subset_samples(tab, experiment == "bigplot/smallss")
+tabinc1 <- phyloseq_validate(tabinc1, remove_undetected = TRUE)
+tabinc1 ## total LFDP OTUs
+
+###Checking if all taxa in the unpooled and intensive plot samples are in the big grid samples
+###########################################
+
+alldatgotu$lenient_10k # used big grid data
+tabinc1 # intentisive sample data
+tab <- subsample_etc_gotus$ssdat
+c12 <- subset_samples(tab, realsample1 == "C12")
+c12 <- subset_samples(c12, DNAtreat == "clean")
+c12<- phyloseq_validate(c12, remove_undetected = TRUE) # c12 pooled and unpooled sample data
+
+tab <- subsample_etc_gotus$ssdat
+c18 <- subset_samples(tab, realsample1 == "C18")
+c18 <- subset_samples(c18, DNAtreat == "clean")
+c18<- phyloseq_validate(c18, remove_undetected = TRUE) # c18 pooled and unpooled sample data
+
+tab <- subsample_etc_gotus$ssdat
+c8 <- subset_samples(tab, realsample1 == "C8")
+c8 <- subset_samples(c8, DNAtreat == "clean")
+c8<- phyloseq_validate(c8, remove_undetected = TRUE) # c8 pooled and unpooled sample data
+
+# Function to check for missing taxa
+check_missing_taxa <- function(small_phy, big_phy, label = "Dataset") {
+  small_taxa <- taxa_names(small_phy)
+  big_taxa <- taxa_names(big_phy)
+  
+  missing <- setdiff(small_taxa, big_taxa)
+  
+  if (length(missing) == 0) {
+    cat(paste0("✅ All taxa in ", label, " are present in alldatgotu$lenient_10k.\n"))
+  } else {
+    cat(paste0("❌ ", label, " is missing ", length(missing), " taxa from alldatgotu$lenient_10k:\n"))
+    print(missing)
+  }
+}
+
+# Run the checks
+check_missing_taxa(tabinc1, alldatgotu$lenient_10k, "tabinc1")
+check_missing_taxa(c12, alldatgotu$lenient_10k, "c12")
+tax_table(c12)["gOTU27", ]
+check_missing_taxa(c18, alldatgotu$lenient_10k, "c18")
+check_missing_taxa(c8, alldatgotu$lenient_10k, "c8")
+
+

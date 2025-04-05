@@ -1,0 +1,9 @@
+INFO [2025-04-05 09:51:39] $x
+INFO [2025-04-05 09:51:39] list(tabinc1 = taxa1, tabinc2 = taxa2, tabinc3 = taxa3, tabinc4 = taxa4)
+INFO [2025-04-05 09:51:39] 
+INFO [2025-04-05 09:51:39] $filename
+INFO [2025-04-05 09:51:39] NULL
+INFO [2025-04-05 09:51:39] 
+INFO [2025-04-05 09:51:39] $fill
+INFO [2025-04-05 09:51:39] c("red", "blue", "green", "purple")
+INFO [2025-04-05 09:51:39] 
