@@ -2,28 +2,28 @@ library(phyloseq)
 library(googlesheets4)
 library(EDIutils)
 
-### Load data from Glenn (we can skip reading the raw data here and jump to the processed object)
-# load("Raw_data/CescPRdata_v2.RData")
-
-#> List of 8 phyloseq objects (lenient, etc.)
-#> data <- readRDS("Processed_data/PR_eDNA-for-analysis_2024-10-29.RData")
-
+### Load data from Glenn
 # List of 12 phyloseq objects (lenient, etc.)
-data <- readRDS("Processed_data/PR_eDNA-for-analysis_2024-12-04.RData")
+data <- readRDS("Processed_data/PR_eDNA-for-analysis_2025-04-01.RData")
 
 ### Load link between OTUs and RefIDs
-otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
-
-### Subset the version of eDNA data to use
-# d <- R1ref.lib.list[[6]]
-# d <- data$lenient
+# otu.potu.link <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")[[6]]
+otupotuR1 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds")[[6]]
+otupotuR2 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2.rds")[[6]]
 
 for(data_selector in seq_along(data)){
   d <- data[[data_selector]]
   
-  ### Prune phyloseq object to the OTUs that appear in the soil data AND correspond to the reference library - this should be redundant with previous processing by Glenn
-  d <- prune_taxa(otu.potu.link[[6]]$OTU, d)
+  ### Determine which otu.potu mapping to use
+  if(!grepl("repfiltered", names(data)[data_selector])) {
+    otu.potu.link <- otupotuR1
+  } else {
+    otu.potu.link <- otupotuR2
+  }
   
+  ### Prune phyloseq object to the OTUs that appear in the soil data AND correspond to the reference library - this should be redundant with previous processing by Glenn
+  d <- prune_taxa(otu.potu.link$OTU, d)
+
   ### Load the LFDP 2023 census extract data
   tree <- readRDS("Raw_data/LFDP2023-extract-20240510.RDA")
   tree16 <- readRDS("Raw_data/LFDP2016-extract-20240510.RDA")
@@ -125,7 +125,7 @@ for(data_selector in seq_along(data)){
   ##### THIS BLOCK COLLAPSES THE DNA DATA TO THE gOTU CLUSTERS
   ### Identify all POTUs/OTUs we need to keep because they are assigned to a gOTU
   potus.keep <- codes$POTU[!is.na(codes$gOTU)]
-  otus.keep <- otu.potu.link[[6]]$OTU[match(potus.keep, otu.potu.link[[6]]$abundance)]
+  otus.keep <- otu.potu.link$OTU[match(potus.keep, otu.potu.link$abundance)]
   gotus.keep <- codes$gOTU[!is.na(codes$gOTU)]
   codes.keep <- codes$`SPECIES CODE`[!is.na(codes$gOTU)]
   
@@ -239,7 +239,7 @@ for(data_selector in seq_along(data)){
   
   # Some gOTU names are in the soil data but not the collapsed list because they aren't trees
   qs <- colnames(d@otu_table)[!colnames(d@otu_table) %in% collapsed.otus]
-  otu.potu.link[[6]][otu.potu.link[[6]]$OTU %in% qs,]
+  otu.potu.link[otu.potu.link$OTU %in% qs,]
   
   # Drop these from the OTU Table
   d <- prune_taxa(colnames(d@otu_table)[colnames(d@otu_table) %in% collapsed.otus], d)
@@ -278,7 +278,7 @@ for(data_selector in seq_along(data)){
   
   outfile <- paste0("Processed_data/stem-soil-40pt-data-",
                     names(data)[data_selector], 
-                    "-20250404.RDA")
+                    "-20250405.RDA")
   
   saveRDS(list(dnamat=dnamat, stem.otu=stem.otu, traits=traits, stem.otu16=stem.otu16), outfile)
 }
