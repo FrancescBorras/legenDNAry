@@ -1261,7 +1261,10 @@ R2blast.l6.m <-  read.csv("R2dada.pspool.nc.lulu.nospec1-ex.txt", header =FALSE)
 
 setwd("/Users/glennd/Downloads") ## where my locally constrcuted DB is
 ## Used locally constructured sql database for taxonomy
-install.packages("taxonomizr")
+#install.packages("taxonomizr")
+#install.packages("taxize")
+#install.packages("taxizedb")
+#remotes::install_github("ropensci/taxizedb")
 library("taxonomizr")
 library("taxize")
 library("taxizedb")
@@ -1298,10 +1301,11 @@ head(R1all.blast.megan.tax$dada.nopool.nochim)
 View(R1SppAssList$dada.nopool.nochim)
 
 
-
+## Changed (ref-taxIDs.csv) this with nex TaxIDs as per Bobs curation update April 8, 2024
 setwd("/Users/glennd/Documents/Cesc-PR-eDNA/Soil_eDNA_data")
-reflbids <- read.csv("ref-taxIDs.csv")
+reflbids <- read.csv("ref-taxIDs1.csv")
 reflbids <-unique(reflbids)
+reflbids <-reflbids[,c(1,2)]
 str(reflbids)
 
 setwd("/Users/glennd/Downloads")
@@ -1311,12 +1315,13 @@ reflbids1 <-  as.data.frame(reflbids1)
 ## preparing to parse RifLib and Genbank dataframes - ## No OTU (row names) numbers are matched to POTUs in reflbids1 table
 str(SppAssList$dada.nopool.nochim)
 reflbids1$Genus <- rownames(reflbids1)
-
+View(reflbids1)
 
 R1SppAssList <- lapply(R1SppAssList, function(x) merge(x, reflbids1, by = "Genus", all.x = TRUE))
 R2SppAssList <- lapply(R2SppAssList, function(x) merge(x, reflbids1, by = "Genus", all.x = TRUE))
 
 library(rlist)
+setwd("/Users/glennd/Documents/GitHub/legenDNAry")
 list.save(R1SppAssList, 'Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds')
 list.save(R2SppAssList, 'Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2.rds')
 

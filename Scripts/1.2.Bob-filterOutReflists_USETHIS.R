@@ -298,7 +298,7 @@ data <- list(lenient_10k=lenient,
              lenient_200k=biggrid_200k, 
              rare_lenient_200k=rare_lenient_200k)
 
-saveRDS(data, "Processed_data/PR_eDNA-for-analysis_2024-12-04.RData")
+saveRDS(data, "Processed_data/PR_eDNA-for-analysis_2025-04-01.RData")
 
 #### Looking at matching OTU - POTU - gOTU
 
@@ -310,8 +310,8 @@ View(bobs)
 ## Matching
 
 ## Link between OTU and pOTU codes - old object incorrect for R2 iterations
-#otupotu <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
-#otupotu <- otupotu[[6]]
+otupotu <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_v1.rds")
+otupotu <- otupotu[[6]]
 str(otupotu)
 ## Link between OTU and pOTU codes
 otupotuR1 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R1.rds")
@@ -319,25 +319,34 @@ otupotuR2 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2
 otupotuR1 <- otupotuR1[[6]] # only using pseudopooled, lulu filtered data (6th object on list)
 otupotuR2 <- otupotuR2[[6]]
 str(otupotuR1)
+## sanity check are OTU-to-RefIDs-List_v1.rds and OTU-to-RefIDs-List_R1.rds identical as they should be?
+str(otupotu)
+str(otupotuR1)
+identical(otupotu, otupotuR1)
+
 ## need to remove OTU34 (unnecessary identified plot taxon) - OTU34 for R1 and OTU33 for R2
 otupotuR1 <- otupotuR1[otupotuR1$OTU != "OTU34", ]
 otupotuR2 <- otupotuR2[otupotuR2$OTU != "OTU33", ]
 View(otupotuR1)
-otupotuR1$sequence <- rownames(otupotuR1)
-otupotuR2$sequence <- rownames(otupotuR2)
+#otupotuR1$sequence <- rownames(otupotuR1)
+#otupotuR2$sequence <- rownames(otupotuR2)
 ## Now getting pOTU to gOTU
 codes <- readxl::read_xlsx("Raw_data/LFDP-SPcodes-Wseq.xlsx")
 str(codes)
 codes <- subset(codes, LFDP2023==1) # making sure only 2023 data is used
 ##object that has all three fields, OTU, POTU and gOTU
-otu_gotu_mapR1 <- merge(otupotuR1, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
-otu_gotu_mapR2 <- merge(otupotuR2, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
+otu_gotu_mapR1 <- merge(otupotuR1, codes, by.x = "Genus", by.y = "POTU")[, c("OTU", "gOTU")]
+otu_gotu_mapR2 <- merge(otupotuR2, codes, by.x = "Genus", by.y = "POTU")[, c("OTU", "gOTU")]
+
+#otu_gotu_mapR1 <- merge(otupotuR1, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
+#otu_gotu_mapR2 <- merge(otupotuR2, codes, by.x = "sequence", by.y = "sequence")[, c("OTU", "gOTU")]
 
 ## Now looping through all PS objects in alldat (the different bioinformatic filterings of the 
 ## 38 biggrid points) and making new PS objects with just GOTU codes
 
-alldat <- readRDS("Processed_data/PR_eDNA-for-analysis_2024-12-04.RData")
+alldat <- readRDS("Processed_data/PR_eDNA-for-analysis_2025-04-01.RData")
 alldat
+# Create named vectors for mapping (R1 and R2)
 # Create named vectors for mapping (R1 and R2)
 otu_to_gotu_R1 <- setNames(otu_gotu_mapR1$gOTU, otu_gotu_mapR1$OTU)
 otu_to_gotu_R2 <- setNames(otu_gotu_mapR2$gOTU, otu_gotu_mapR2$OTU)
@@ -345,57 +354,58 @@ otu_to_gotu_R2 <- setNames(otu_gotu_mapR2$gOTU, otu_gotu_mapR2$OTU)
 # Initialize list for updated phyloseq objects
 alldatgotu <- list()
 
-# Loop over all phyloseq objects in alldat
+# Loop through each phyloseq object in the list
 for (name in names(alldat)) {
+  message("🔧 Processing: ", name)
+  
   ps_obj <- alldat[[name]]
   
-  # Determine which mapping to use
-  if (grepl("repfiltered", name)) {
+  # Choose appropriate OTU-to-gOTU mapping
+  if (grepl("repfiltered", name, ignore.case = TRUE)) {
     otu_to_gotu <- otu_to_gotu_R2
+    message("📌 Using R2 mapping")
   } else {
     otu_to_gotu <- otu_to_gotu_R1
+    message("📌 Using R1 mapping")
   }
   
   # Extract components
   otu_tab <- as(otu_table(ps_obj), "matrix")
-  sample_dat <- sample_data(ps_obj)
-  tax_tab <- tax_table(ps_obj)
-  
-  # Transpose OTU table if necessary
   if (!taxa_are_rows(otu_table(ps_obj))) {
     otu_tab <- t(otu_tab)
   }
+  sample_dat <- sample_data(ps_obj)
+  tax_tab <- tax_table(ps_obj)
   
-  # Identify OTUs that have a gOTU mapping
+  # Match and rename OTUs
   matched_otus <- intersect(rownames(otu_tab), names(otu_to_gotu))
   renamed_otus <- otu_to_gotu[matched_otus]
-  
-  # Rename OTUs
   rownames(otu_tab)[match(matched_otus, rownames(otu_tab))] <- renamed_otus
   
-  # Collapse duplicate gOTUs
+  # Collapse by gOTU
   otu_tab_collapsed <- as.matrix(rowsum(otu_tab, group = rownames(otu_tab)))
   
-  # Keep only mapped gOTUs
+  # Keep only valid gOTUs
   valid_gOTUs <- intersect(rownames(otu_tab_collapsed), unique(otu_to_gotu))
   otu_tab_collapsed <- otu_tab_collapsed[valid_gOTUs, , drop = FALSE]
   
-  # Update taxonomy table to match
+  # Update taxonomy table to match collapsed gOTUs
   if (!is.null(tax_tab)) {
     rownames(tax_tab)[rownames(tax_tab) %in% matched_otus] <- renamed_otus
     tax_tab <- tax_tab[!duplicated(rownames(tax_tab)), , drop = FALSE]
     tax_tab <- tax_tab[valid_gOTUs, , drop = FALSE]
   }
   
-  # Rebuild phyloseq object
+  # Rebuild the phyloseq object
   new_ps <- phyloseq(
     otu_table(otu_tab_collapsed, taxa_are_rows = TRUE),
     sample_dat,
     if (!is.null(tax_tab)) tax_table(tax_tab)
   )
   
+  # Store in output list
   alldatgotu[[name]] <- new_ps
-  message("✅ Processed: ", name)
+  message("✅ Finished: ", name)
 }
 
 
