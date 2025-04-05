@@ -1,4 +1,6 @@
 
+"Raw_data/LFDP2016-extract-v2-20240427.RDA"
+
 ### PROCESS ROUND 2 OF LFDP 2023 DATA EXTRACT
 
 res <- matrix(nrow=length(codes.collapse.list), ncol=6) # from 2.Matching...
@@ -12,6 +14,9 @@ res <- as.data.frame(res)
 names(res) <- names(lfdp)[-1]
 
 # saveRDS(res, "Raw_data/LFDP2023-extract-v2-20240427-gOTUs.RDA")
+# saveRDS(res, "Raw_data/LFDP2023-extract-v2-20250404-gOTUs.RDA")
+# saveRDS(res, "Raw_data/LFDP2016-extract-v2-20250404-gOTUs.RDA")
+# saveRDS(res, "Raw_data/LFDP2023-extract-v2-drop_noSeq_gOTUs-20240427-gOTUs.RDA")
 
 # 'df' is a data.frame build by counting up 2016 stem / basal area data
 

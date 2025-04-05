@@ -9,8 +9,8 @@
 ### Color palette for plotting
 cp <- rev(viridis::viridis(20))
 
-g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250312.RDA")[[1]]
-g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250312.RDA")[[2]]
+g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-drop_noSeq_gOTUs-20250312.RDA")[[1]]
+g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-drop_noSeq_gOTUs-20250312.RDA")[[2]]
 
 
 ### Make labels for saving plots
@@ -27,40 +27,28 @@ labels <- c("lenient_10k",
            "repfiltered",
            "repfilteredf1")
 
-### Name data files
-outfiles <- c( "stem-soil-40pt-data-lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-lenientf1-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-rare_repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfilteredf1-20250404.RDA")
-
 ### Select data file to load (for testing)
-# data_selector <- 1
+data_selector <- 1
 
 ### Select data file to load (for full loop)
 for(data_selector in seq_along(outfiles)){
   
   conf_stats_obs_list <- readRDS(paste0("Processed_data/Conf_matrix_output-", 
-                                        labels[data_selector], "-20250404.RDA"))[[1]]
+                                        labels[data_selector], 
+                                        "-drop_noSeq_gOTUs-20250312.RDA"))[[1]]
   conf_stats_ses_list <- readRDS(paste0("Processed_data/Conf_matrix_output-", 
-                                        labels[data_selector], "-20250404.RDA"))[[2]]
+                                        labels[data_selector], 
+                                        "-drop_noSeq_gOTUs-20250312.RDA"))[[2]]
   
   # conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250312.RDA")[[1]]
   # conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250312.RDA")[[2]]
   
-  dna <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250404.RDA")[[1]]
-  stem.23 <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20250404.RDA")[[2]]
+  dna <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-drop_noSeq_gOTUs-20250312.RDA")[[1]]
+  stem.23 <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-drop_noSeq_gOTUs-20250312.RDA")[[2]]
   
   pdf(paste0("Figures/compare_filtering/Fig3.Confusion-matrix-stats_",
            labels[data_selector],
-           ".pdf"), width = 8, height = 10)
+           "-drop_noSeq_gOTUs.pdf"), width = 8, height = 10)
 
   par(mfrow=c(3,2), mar=c(4,4,1,1), oma=c(1,1,1,1))
   

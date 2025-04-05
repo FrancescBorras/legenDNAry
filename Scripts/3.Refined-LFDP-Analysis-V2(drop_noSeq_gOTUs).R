@@ -30,18 +30,18 @@ label <- c("lenient_10k",
            "repfilteredf1")
 
 ### Name data files
-outfiles <- c( "stem-soil-40pt-data-lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-lenientf1-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-rare_repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfilteredf1-20250404.RDA")
+outfiles <- c( "stem-soil-40pt-data-lenient_10k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-lenient_200k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-lenient_40k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-lenient_70k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-lenientf1-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_10k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_200k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_40k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-rare_lenient_70k-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-rare_repfiltered-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-repfiltered-drop_noSeq_gOTUs-20250312.RDA",
+               "stem-soil-40pt-data-repfilteredf1-drop_noSeq_gOTUs-20250312.RDA")
 
 ### Select data file to load (for testing)
 # data_selector <- 1
@@ -69,8 +69,11 @@ lfdp <- readRDS("Raw_data/LFDP2023-extract-v2-20240427.RDA")
 df <- readRDS("Raw_data/LFDP2016-extract-v2-20240427.RDA")
 
 ### gOTU full plot summaries
-lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-20250404-gOTUs.RDA")
-lfdp16 <- readRDS("Raw_data/LFDP2016-extract-v2-20250404-gOTUs.RDA")
+lfdp23 <- readRDS("Raw_data/LFDP2023-extract-v2-drop_noSeq_gOTUs-20240427-gOTUs.RDA")
+# lfdp16 <- readRDS("Raw_data/LFDP2016-extract-v2-20240427-gOTUs.RDA")
+
+codes <- readxl::read_xlsx("Raw_data/LFDP-SPcodes.xlsx")
+lfdp <- lfdp[lfdp$spcode %in% codes$`SPECIES CODE`[!is.na(codes$gOTU_2)],]
 
 ### Make presence absence matrices
 dnamat.pa <- 1*(dnamat>0)
@@ -88,10 +91,7 @@ cp <- rev(viridis::viridis(20))
 # stem.23$nn <- stem.23$nn[rownames(stem.23$nn) %in% focsites,]
 
 # gOTUs in the DNA data
-(gotu_in <- colnames(dnamat.pa)[colSums(dnamat.pa)>0])
-
-# Total gOTUs in the stem data:
-(no_gotu_stem <- sum(lfdp23$total_abund>0))
+gotu_in <- colnames(dnamat.pa)[colSums(dnamat.pa)>0]
 
 sum(lfdp23$total_abund[rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_abund)
 sum(lfdp23$total_ba[rownames(lfdp23) %in% gotu_in]) / sum(lfdp23$total_ba)
@@ -140,13 +140,17 @@ for(r in seq_along(stem.23$abund)){
 cp <- rev(viridis::viridis(20))
 cpsp <- viridis::viridis_pal(option = "A")(20)[cut(log10(lfdp23$total_abund), 20)]
 
-pdf(paste0("Figures/compare_filtering/Fig2.rank-abundance-plot_", 
+pdf(paste0("Figures/compare_filtering/Fig2.rank-abundance-plot-drop_noSeq_gOTUs_", 
            label[data_selector],
            ".pdf"), width = 7, height = 6)
 
 par(mfrow=c(3,2), mar=c(4,4,1,1))
 
 # TAXON ACCUMULATION IN STEM DATA WITH INCREASING RADII AROUND SAMPLE POINTS
+
+# Total gOTUs in the stem data:
+(no_gotu_stem <- sum(lfdp23$total_abund>0))
+
 b <- boxplot(sapply(stem.23$abund, function(x) rowSums(x>0)[1:npts]), 
              col=cp,
              xlab="Radius (m)", 
@@ -382,7 +386,9 @@ plot_level_summary_table[data_selector,] <- c(label[data_selector],
 plot_level_summary_table[,-1] <- round(apply(plot_level_summary_table[,-1], 2, as.numeric), 3)
 
 if(data_selector==length(outfiles)){
-  write.csv(plot_level_summary_table, "Results/plot_level_summary_table.csv", row.names = F)
+  write.csv(plot_level_summary_table, 
+            "Results/plot_level_summary_table-drop_noSeq_gOTUs.csv", 
+            row.names = F)
 }
 
 ########################################################
@@ -466,6 +472,7 @@ if(data_selector==length(outfiles)){
 ### (INCLUDING STANDARDIZED EFFECT SIZE OF BALANCED ACCURACY)
 ### **Note that this takes while to run**
 
+if(run_confus==T){
 message(paste("working on confusion matrix for", datafile, "; dataset", data_selector))
 
 
@@ -481,7 +488,7 @@ cl <- makeCluster(num_cores)
 conf_stats_obs_list <- vector("list", length = 20)
 conf_stats_ses_list <- vector("list", length = 20)
 
-nruns <- 999
+nruns <- 99
 
 # Function to compute standardized effect size
 ses <- function(obs, rand){
@@ -574,7 +581,7 @@ round(median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]]), 2)
 # Save confusion matrix
 saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
              conf_stats_ses_list=conf_stats_ses_list), 
-        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250404.RDA"))
+        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-drop_noSeq_gOTUs-20250312.RDA"))
 
 
 # ### Figure 4
@@ -673,6 +680,7 @@ saveRDS(list(conf_stats_obs_list=conf_stats_obs_list,
 # dev.off()
 
 }
+}
 
 
 
@@ -682,11 +690,11 @@ saveRDS(list(conf_stats_obs_list=conf_stats_obs_list,
 
 
 
-g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250307.RDA")[[1]]
-g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-20250307.RDA")[[2]]
+g_conf_stats_obs <- readRDS("Processed_data/Conf_matrix_output-Gplots-drop_noSeq_gOTUs-20250307.RDA")[[1]]
+g_conf_stats_ses <- readRDS("Processed_data/Conf_matrix_output-Gplots-drop_noSeq_gOTUs-20250307.RDA")[[2]]
 
-conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[1]]
-conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-20250307.RDA")[[2]]
+conf_stats_obs_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-drop_noSeq_gOTUs-20250307.RDA")[[1]]
+conf_stats_ses_list <- readRDS("Processed_data/Conf_matrix_output-lenient_10k-drop_noSeq_gOTUs-20250307.RDA")[[2]]
 
 
 
