@@ -30,18 +30,18 @@ label <- c("lenient_10k",
            "repfilteredf1")
 
 ### Name data files
-outfiles <- c( "stem-soil-40pt-data-lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-lenientf1-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_10k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_200k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_40k-20250404.RDA",
-               "stem-soil-40pt-data-rare_lenient_70k-20250404.RDA",
-               "stem-soil-40pt-data-rare_repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfiltered-20250404.RDA",
-               "stem-soil-40pt-data-repfilteredf1-20250404.RDA")
+outfiles <- c( "stem-soil-40pt-data-lenient_10k-20250405.RDA",
+               "stem-soil-40pt-data-lenient_200k-20250405.RDA",
+               "stem-soil-40pt-data-lenient_40k-20250405.RDA",
+               "stem-soil-40pt-data-lenient_70k-20250405.RDA",
+               "stem-soil-40pt-data-lenientf1-20250405.RDA",
+               "stem-soil-40pt-data-rare_lenient_10k-20250405.RDA",
+               "stem-soil-40pt-data-rare_lenient_200k-20250405.RDA",
+               "stem-soil-40pt-data-rare_lenient_40k-20250405.RDA",
+               "stem-soil-40pt-data-rare_lenient_70k-20250405.RDA",
+               "stem-soil-40pt-data-rare_repfiltered-20250405.RDA",
+               "stem-soil-40pt-data-repfiltered-20250405.RDA",
+               "stem-soil-40pt-data-repfilteredf1-20250405.RDA")
 
 ### Select data file to load (for testing)
 # data_selector <- 1
@@ -574,7 +574,7 @@ round(median(lapply(conf_stats_obs_list, function(x) x$`MCC`)[[20]]), 2)
 # Save confusion matrix
 saveRDS(list(conf_stats_obs_list=conf_stats_obs_list, 
              conf_stats_ses_list=conf_stats_ses_list), 
-        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250404.RDA"))
+        file=paste0("Processed_data/Conf_matrix_output-", label[data_selector], "-20250405.RDA"))
 
 
 # ### Figure 4
