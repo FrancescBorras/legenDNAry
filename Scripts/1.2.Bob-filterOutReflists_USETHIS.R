@@ -300,13 +300,40 @@ data <- list(lenient_10k=lenient,
 
 saveRDS(data, "Processed_data/PR_eDNA-for-analysis_2025-04-01.RData")
 
-#### Looking at matching OTU - POTU - gOTU
+## also need an object with the above 12 sampling iterations for the intensive plot for confusion matrix analysis
+inten_lenient_10k <- R1ref.lib.list[[6]]
+inten_lenient_10k <- subset_samples(inten_lenient_10k, experiment == "bigplot/smallss")
+inten_lenient_10k <-phyloseq_validate(inten_lenient_10k, remove_undetected = TRUE)
+inten_rare_lenient_10k <- rarfun(inten_lenient_10k)
+inten_lenientf1_10k <- phyloseq_filter_sample_wise_abund_trim(inten_lenient_10k, minabund = 0.0001, relabund = TRUE)
+inten_repfil_10k <- R2ref.lib.list[[6]]
+inten_repfil_10k <- subset_samples(inten_repfil_10k, experiment == "bigplot/smallss")
+inten_repfil_10k <-phyloseq_validate(inten_repfil_10k, remove_undetected = TRUE)
+inten_rare_repfiltered_10k <- rarfun(inten_repfil_10k)
+inten_repfilteredf1_10k <- phyloseq_filter_sample_wise_abund_trim(inten_repfil_10k, minabund = 0.0001, relabund = TRUE)
+inten_lenient_40k <- prune_samples(sample_sums(smallgridpostcut) >= 40000, smallgridpostcut)
+inten_rare_lenient_40k <- rarfun(inten_lenient_40k)
+inten_lenient_70k <- prune_samples(sample_sums(smallgridpostcut) >= 70000, smallgridpostcut)
+inten_rare_lenient_70k <- rarfun(inten_lenient_70k)
+inten_lenient_200k <- prune_samples(sample_sums(smallgridpostcut) >= 200000, smallgridpostcut)
+inten_rare_lenient_200k <- rarfun(inten_lenient_70k)
 
-# bobs matching etc
-bobs <- readRDS("Processed_data/stem-soil-40pt-data-lenient_10k-20241205.RDA")
-str(bobs)
-View(bobs)
+datainten <- list(inten_lenient_10k=inten_lenient_10k,
+                  inten_rare_lenient_10k=inten_rare_lenient_10k,
+                  inten_lenientf1_10k=inten_lenientf1_10k,
+                  inten_repfil_10k=inten_repfil_10k,
+                  inten_rare_repfiltered_10k =inten_rare_repfiltered_10k ,
+                  inten_repfilteredf1_10k=inten_repfilteredf1_10k, 
+                  inten_lenient_40k=inten_lenient_40k, 
+                  inten_rare_lenient_40k=inten_rare_lenient_40k,
+                  inten_lenient_70k =inten_lenient_70k , 
+                  inten_rare_lenient_70k=inten_rare_lenient_70k,
+                  inten_lenient_200k=inten_lenient_200k, 
+                  inten_rare_lenient_200k=inten_rare_lenient_200k)
 
+saveRDS(datainten, "Processed_data/PR_eDNA-for-analysis_intenplot_2025-04-01.RData")
+
+#### Looking at matching OTU - POTU - gOTU for intensive grid supporting information plots
 ## Matching
 
 ## Link between OTU and pOTU codes - old object incorrect for R2 iterations
@@ -319,7 +346,7 @@ otupotuR2 <- readRDS("Raw_data/Reference_library_filtering/OTU-to-RefIDs-List_R2
 otupotuR1 <- otupotuR1[[6]] # only using pseudopooled, lulu filtered data (6th object on list)
 otupotuR2 <- otupotuR2[[6]]
 str(otupotuR1)
-## sanity check are OTU-to-RefIDs-List_v1.rds and OTU-to-RefIDs-List_R1.rds identical as they should be?
+## sanity check are old OTU-to-RefIDs-List_v1.rds and OTU-to-RefIDs-List_R1.rds identical as they should be?
 str(otupotu)
 str(otupotuR1)
 identical(otupotu, otupotuR1)
@@ -328,8 +355,7 @@ identical(otupotu, otupotuR1)
 otupotuR1 <- otupotuR1[otupotuR1$OTU != "OTU34", ]
 otupotuR2 <- otupotuR2[otupotuR2$OTU != "OTU33", ]
 View(otupotuR1)
-#otupotuR1$sequence <- rownames(otupotuR1)
-#otupotuR2$sequence <- rownames(otupotuR2)
+
 ## Now getting pOTU to gOTU
 codes <- readxl::read_xlsx("Raw_data/LFDP-SPcodes-Wseq.xlsx")
 str(codes)
